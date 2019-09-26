@@ -87,3 +87,8 @@ unsigned int GetSum(FIFO *pFifo)
     return sum;
 }
 
+int main(void)
+{
+    return 0;
+}
+

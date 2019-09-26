@@ -84,4 +84,8 @@ unsigned int GetSum(LIFO *pLifo)
 }
 
 
+int main(void)
+{
+    return 0;
+}
 
