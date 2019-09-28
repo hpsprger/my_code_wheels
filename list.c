@@ -31,7 +31,7 @@ struct list_head {
 #define LIST_HEAD_INIT(name) { &(name), &(name) }
 
 //step1: we define a list_head instance by the macro 
-#define LIST_HEAD(name) \ 
+#define LIST_HEAD(name) \
 	struct list_head name = LIST_HEAD_INIT(name)
 
 
