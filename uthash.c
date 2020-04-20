@@ -480,10 +480,10 @@ void PushStack(Stack *pStack, int data)
 
 int PopStack(Stack *pStack)
 {
-        if (pStack->idx == 0) {
-                    return -1;
-                        }
-            return pStack->data[--pStack->idx];
+    if (pStack->idx == 0) {
+        return -1;
+    }
+    return pStack->data[--pStack->idx];
 }
 
 int IsStackEmpty(Stack *pStack)
