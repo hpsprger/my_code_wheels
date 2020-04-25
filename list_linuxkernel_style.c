@@ -3,7 +3,8 @@
 #include<string.h>
 #include<stdlib.h>
 
-//scripts/kconfig/list.h
+//include/linux/types.h
+//include/linux/list.h
 
 //PS
 //we access a list by list_head always 
