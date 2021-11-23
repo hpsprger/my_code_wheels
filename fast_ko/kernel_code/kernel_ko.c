@@ -21,36 +21,45 @@ static struct device *devp[DEV_NUMS] = {NULL};
 
 #define DEVNAME "rocklee_cdev"
 
-static irqreturn_t KEY_interrupt(int irq, void *dev_id)
+static irqreturn_t rocklee_interrupt(int irq, void *dev_id)
 {
-    printk("%s(%d)\n", __FUNCTION__, __LINE__);
+    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
     return IRQ_HANDLED;
 }
 
-static ssize_t leds_show(struct device * pdevice,struct device_attribute *attr,const char *buf,size_t count)
+static ssize_t rocklee_show(struct device *pdevice, struct device_attribute *attr, char *buf)
 {
-    struct rocklee_leds_device  *pDev = NULL;
-    pDev = (struct rocklee_leds_device  *)(pdevice->platform_data);
-
-    if (0 == strcmp(attr->attr.name,"ctl_led0"))
-    {
-        printk(KERN_EMERG"led 0: %d\n",gpio_get_value(Leds[0]));
+    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    if (0 == strcmp(attr->attr.name,"rocklee_dbg_0")) {
+        printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
     }
-    else  if (0 == strcmp(attr->attr.name,"ctl_led1"))
-    {
-        printk(KERN_EMERG"led 1: %d\n",gpio_get_value(Leds[1]));
+    else  if (0 == strcmp(attr->attr.name,"rocklee_dbg_1")) {
+        printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
     }
     return 0;
 }
 
+static ssize_t rocklee_store(struct device *pdevice, struct device_attribute *attr, const char *buf, size_t count)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+
+    if (0 == strcmp(attr->attr.name,"rocklee_dbg_0")) {
+
+    } else if (0 == strcmp(attr->attr.name,"rocklee_dbg_1")) {
+
+    }
+    
+    return count;
+}
+
 static struct device_attribute  rocklee_sysfs_attribute[] = {
-    __ATTR(ctl_led0,0777,leds_show,ctl_leds),
-    __ATTR(ctl_led1,0777,leds_show,ctl_leds),
+    __ATTR(rocklee_dbg_0, 0664, rocklee_show, rocklee_store),
+    __ATTR(rocklee_dbg_1, 0664, rocklee_show, rocklee_store),
 };
 
 static long rocklee_fops_ioctl( struct file *files, unsigned int cmd, unsigned long arg)
 {
-    printk(KERN_EMERG "Fn:%s Ln:%d  cmd is %d, arg is %d ...\n",__func__,__LINE__, cmd, arg);
+    printk(KERN_EMERG "Fn:%s Ln:%d  cmd is %d, arg is %ld ...\n",__func__,__LINE__, cmd, arg);
     switch(cmd)
     {
         case 0:
@@ -74,15 +83,15 @@ static int rocklee_fops_open(struct inode *inode, struct file *file)
     return 0;
 }
 
-static int rocklee_fops_write(struct file * pfile, char __user * buffer, size_t count, loff_t  * ppos)
+static long rocklee_fops_write(struct file * pfile, const char __user * buffer, size_t count, loff_t  * ppos)
 {
-    printk(KERN_EMERG "Fn:%s Ln:%d buffer:%s  count:%d ...\n",__func__,__LINE__, buffer, count);
+    printk(KERN_EMERG "Fn:%s Ln:%d buffer:%s  count:%ld ...\n",__func__,__LINE__, buffer, count);
     return 0;
 }
 
-static int rocklee_fops_read(struct file * pfile, char __user * buffer, size_t count, loff_t  * ppos)
+static ssize_t rocklee_fops_read(struct file * pfile, char __user * buffer, size_t count, loff_t  * ppos)
 {
-    printk(KERN_EMERG "Fn:%s Ln:%d buffer:%s  count:%d ...\n",__func__,__LINE__, buffer, count);
+    printk(KERN_EMERG "Fn:%s Ln:%d buffer:%s  count:%ld ...\n",__func__,__LINE__, buffer, count);
     return 0;
 }
 
@@ -91,7 +100,7 @@ static struct file_operations rocklee_fops = {
     .open = rocklee_fops_open,
     .release = rocklee_fops_release,
     .write = rocklee_fops_write,
-    .read = rocklee_fops_write,  
+    .read = rocklee_fops_read,
     .unlocked_ioctl = rocklee_fops_ioctl,
 };
 
@@ -117,7 +126,7 @@ static int rocklee_init(void)
         printk(KERN_EMERG "Fn:%s Ln:%d  failed...\n",__func__,__LINE__);
         goto ERR_STEP;
     }
-    major = MAJOR(devnum)
+    major = MAJOR(devnum);
     
     //step3 register cdev obj 
     ret = cdev_add(dev_obj, devnum, dev_count);
@@ -146,12 +155,18 @@ static int rocklee_init(void)
                 goto ERR_STEP3;
             }
         }
+        
+        ret = request_irq(36, rocklee_interrupt, IRQ_TYPE_EDGE_FALLING, DEVNAME"_intrupt", devp[i]);
+        if (ret < 0) {
+            printk("Request IRQ %d failed, %d\n", i, ret);
+            goto ERR_STEP3;
+        }
     }
-    
+
     return 0;
 ERR_STEP3:
     for (i = 0; i < dev_count; i++) {
-        for(j = 0; j < ARRAY_SIZE(rocklee_leds_attribute); j++) {
+        for(j = 0; j < ARRAY_SIZE(rocklee_sysfs_attribute); j++) {
             device_remove_file(devp[i], &rocklee_sysfs_attribute[j]); //rm sysfs entry
         }
     }
@@ -171,11 +186,16 @@ ERR_STEP:
 static void rocklee_exit(void)
 {
     int i;
-    
+    int j;
+        
     printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
     
     for (i = 0; i < dev_count; i++) {
-        for(j = 0; j < ARRAY_SIZE(rocklee_leds_attribute); j++) {
+        free_irq(36, devp[i]);
+    }
+    
+    for (i = 0; i < dev_count; i++) {
+        for(j = 0; j < ARRAY_SIZE(rocklee_sysfs_attribute); j++) {
             device_remove_file(devp[i], &rocklee_sysfs_attribute[j]); //rm sysfs entry
         }
     }
@@ -185,7 +205,7 @@ static void rocklee_exit(void)
     }
     
     class_destroy(cls);
-    unregister_chrdev_region(devnum, dev_count);
+    unregister_chrdev_region(MKDEV(major, minor), dev_count);
     cdev_del(dev_obj);
     
     return;

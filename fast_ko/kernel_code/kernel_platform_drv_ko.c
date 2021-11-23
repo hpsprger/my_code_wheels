@@ -35,9 +35,8 @@ static irqreturn_t eint16_KEY_VOLDOWN_interrupt(int irq, void *dev_id)
     return IRQ_HANDLED;
 }
 
-static ssize_t leds_show(struct device * pdevice,struct device_attribute *attr,const char *buf,size_t count)
+static ssize_t rocklee_show(struct device * pdevice, struct device_attribute *attr, const char *buf, size_t count)
 {
-
     struct rocklee_leds_device  *pDev = NULL;
     pDev = (struct rocklee_leds_device  *)(pdevice->platform_data);
 
@@ -52,11 +51,34 @@ static ssize_t leds_show(struct device * pdevice,struct device_attribute *attr,c
     return 0;
 }
 
-static struct device_attribute  rocklee_leds_attribute[] = {
-    __ATTR(ctl_led0,0777,leds_show,ctl_leds),
-    __ATTR(ctl_led1,0777,leds_show,ctl_leds),
-};
+static ssize_t ctl_leds(struct device * pdevice,struct device_attribute *attr,const char *buf,size_t count)
 
+{
+
+	struct gpios_leds_device  *pDev = NULL;
+
+
+	pDev = (struct gpios_leds_device  *)(pdevice->platform_data);
+
+
+	printk(KERN_EMERG"ctl_leds:%s count=%d  buf[0]=%c\n",buf,count,buf[0]);
+
+
+	if (0 == strcmp(attr->attr.name,"ctl_led0")) {
+
+	}
+	else  if (0 == strcmp(attr->attr.name,"ctl_led1")) {
+
+	}
+
+	return count;
+
+}
+
+static struct device_attribute rocklee_leds_attribute[] = {
+    __ATTR(ctl_led0, 0777, rocklee_show, ctl_leds),
+    __ATTR(ctl_led1, 0777, rocklee_show, ctl_leds),
+};
 
 static long rocklee_fops_ioctl( struct file *files, unsigned int cmd, unsigned long arg)
 {
