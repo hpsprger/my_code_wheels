@@ -8,6 +8,10 @@
 #include <termios.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include <errno.h>
+
+
+//sudo ./rocklee_user 1 1 
 
 void main(int argc, char* argv[])
 {
@@ -21,7 +25,7 @@ void main(int argc, char* argv[])
     }
 
     if((fd = open(device_node, O_RDWR|O_NOCTTY|O_NDELAY))<0) {
-        printf("Open %s faild\n", device_node);
+        printf("Open %s faild(errno:%d)\n", device_node, errno);
         exit(1);
     }
 

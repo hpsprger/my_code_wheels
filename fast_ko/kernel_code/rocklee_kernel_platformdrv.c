@@ -117,7 +117,7 @@ static int rocklee_driver_probe(struct platform_device *pdv)
     dev_t devt;
 
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    
+
     dev_obj = cdev_alloc();
     if (dev_obj == NULL) {
     	printk(KERN_EMERG "Fn:%s Ln:%d  failed...\n",__func__,__LINE__);
@@ -127,22 +127,22 @@ static int rocklee_driver_probe(struct platform_device *pdv)
     //character device init  with  fops
     cdev_init(dev_obj, &rocklee_fops);
     
-    //insert cdev using devt  into system
-    ret = cdev_add(dev_obj, devt, dev_count);
-    if (ret) {
-        printk(KERN_EMERG "Fn:%s Ln:%d  failed...\n",__func__,__LINE__);
-        goto ERR_STEP;
-    }
-    
     //DEVNAME:cat /proc/devices ==> show name 
     ret = alloc_chrdev_region(&devt, minor, dev_count, DEVNAME"_device");
     if (ret) {
-        printk(KERN_EMERG "Fn:%s Ln:%d  failed...\n",__func__,__LINE__);
+        printk(KERN_EMERG "Fn:%s Ln:%d  failed(%d)...\n",__func__,__LINE__, ret);
         goto ERR_STEP;
     }
     major = MAJOR(devt);
     printk(KERN_EMERG"MAJOR(devt)=%d  MINOR(devt)=%d \n", MAJOR(devt), MINOR(devt));
     
+    //insert cdev using devt  into system
+    ret = cdev_add(dev_obj, devt, dev_count);
+    if (ret) {
+        printk(KERN_EMERG "Fn:%s Ln:%d  failed(%d)...\n",__func__,__LINE__, ret);
+        goto ERR_STEP;
+    }    
+ 
     pDev = kmalloc(sizeof(rocklee_priv_device), GFP_KERNEL);
     if (NULL == pDev) {
         ret = -ENOMEM;
@@ -204,7 +204,7 @@ ERR_STEP1:
     kfree(pDev);
 ERR_STEP:
     cdev_del(dev_obj);
-    printk(KERN_EMERG "Fn:%s Ln:%d  failed...\n",__func__,__LINE__);
+    printk(KERN_EMERG "Fn:%s Ln:%d  failed(%d)...\n",__func__,__LINE__, ret);
     return ret; 
 }
 
@@ -240,20 +240,21 @@ static int rocklee_driver_remove(struct platform_device *pdv)
 
 static void rocklee_driver_shutdown(struct platform_device *pdv)
 {
-    ;
+    printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
 }
 
 static int rocklee_driver_suspend(struct platform_device *pdv,pm_message_t pmt)
 {
+    printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
     return 0;
 }
 
 
 static int rocklee_driver_resume(struct platform_device *pdv)
 {
+    printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
     return 0;
 }
-
 
 struct platform_driver rocklee_driver = {
     .probe = rocklee_driver_probe,
@@ -262,7 +263,7 @@ struct platform_driver rocklee_driver = {
     .suspend = rocklee_driver_suspend,
     .resume = rocklee_driver_resume,
     .driver = {
-        .name = DEVNAME"_platform_drv",
+        .name = DEVNAME"_platform",//platform_device'name  and platform_driver'name must be the same
         .owner = THIS_MODULE,
     }
 };
@@ -273,7 +274,7 @@ void rocklee_device_release(struct device *dev)
 }
 
 struct platform_device rocklee_device = {
-    .name = DEVNAME"_platfor_device",
+    .name = DEVNAME"_platform",//platform_device'name  and platform_driver'name must be the same
     .id = -1,
     .dev.release = rocklee_device_release,
 };
