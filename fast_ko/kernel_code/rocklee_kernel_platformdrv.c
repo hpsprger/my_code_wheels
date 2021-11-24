@@ -9,9 +9,9 @@
 #include <linux/slab.h>
 
 
-typedef struct tag_rocklee_device {
+typedef struct tag_rocklee_priv_device {
     int devnum;
-}rocklee_device;
+}rocklee_priv_device;
 
 #define DEV_NUMS (1)
 
@@ -112,7 +112,8 @@ static int rocklee_driver_probe(struct platform_device *pdv)
 {
     int ret;
     int i;
-    rocklee_device *pDev = NULL;
+    int j;
+    rocklee_priv_device *pDev = NULL;
     dev_t devt;
 
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
@@ -142,13 +143,13 @@ static int rocklee_driver_probe(struct platform_device *pdv)
     major = MAJOR(devt);
     printk(KERN_EMERG"MAJOR(devt)=%d  MINOR(devt)=%d \n", MAJOR(devt), MINOR(devt));
     
-    pDev = kmalloc(sizeof(rocklee_device), GFP_KERNEL);
+    pDev = kmalloc(sizeof(rocklee_priv_device), GFP_KERNEL);
     if (NULL == pDev) {
         ret = -ENOMEM;
         printk(KERN_EMERG "Fn:%s Ln:%d  kmalloc failed...\n",__func__,__LINE__);
         return -ENOMEM;
     }
-    memset(pDev, 0, sizeof(rocklee_device));
+    memset(pDev, 0, sizeof(rocklee_priv_device));
 
     //create device class, ready for the next steps
     cls = class_create(THIS_MODULE, DEVNAME"_class"); 
@@ -182,8 +183,6 @@ static int rocklee_driver_probe(struct platform_device *pdv)
     }
 
     //for passing paramter to other function
-    pDev->pdevice->platform_data = pDev;  
-    //for passing paramter to other function
     pdv->dev.platform_data = pDev;  
 
     return 0;
@@ -201,7 +200,7 @@ ERR_STEP3:
 ERR_STEP2:
     class_destroy(cls);
 ERR_STEP1:
-    unregister_chrdev_region(devnum, dev_count);
+    unregister_chrdev_region(devt, dev_count);
     kfree(pDev);
 ERR_STEP:
     cdev_del(dev_obj);
@@ -263,7 +262,7 @@ struct platform_driver rocklee_driver = {
     .suspend = rocklee_driver_suspend,
     .resume = rocklee_driver_resume,
     .driver = {
-        .name = DRIVER_NAME,
+        .name = DEVNAME"_platform_drv",
         .owner = THIS_MODULE,
     }
 };
@@ -274,7 +273,7 @@ void rocklee_device_release(struct device *dev)
 }
 
 struct platform_device rocklee_device = {
-    .name = DEVICE_NAME,
+    .name = DEVNAME"_platfor_device",
     .id = -1,
     .dev.release = rocklee_device_release,
 };
@@ -288,12 +287,12 @@ static int rocklee_init(void)
     ret = platform_driver_register(&rocklee_driver);
     if (ret) {
         printk(KERN_EMERG "Fn:%s Ln:%d failed(%d)...\n",__func__,__LINE__, ret);
-        goto exit_unavailable;
+        return ret;
     }
     ret = platform_device_register(&rocklee_device);
     if (ret) {
         printk(KERN_EMERG "Fn:%s Ln:%d failed...\n",__func__,__LINE__, ret);
-        goto exit_unavailable;
+        return ret;
     }
     return 0;
 }

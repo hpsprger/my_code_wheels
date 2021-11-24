@@ -26,7 +26,7 @@ obj-m := $(kernel_module_name).o
 #$(kernel_module_name)-objs := rock_gpio_led.o  rock_gpio_led_sub.o 
 
 #for second ko module
-#kernel_module_name := rock_net_card
-#obj-m += $(kernel_module_name).o
+kernel_module_name := rocklee_kernel_platformdrv
+obj-m += $(kernel_module_name).o
 
 endif
