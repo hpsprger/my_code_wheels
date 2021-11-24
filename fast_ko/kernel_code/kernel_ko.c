@@ -156,11 +156,11 @@ static int rocklee_init(void)
             }
         }
         
-        ret = request_irq(36, rocklee_interrupt, IRQ_TYPE_EDGE_FALLING, DEVNAME"_intrupt", devp[i]);
-        if (ret < 0) {
-            printk("Request IRQ %d failed, %d\n", i, ret);
-            goto ERR_STEP3;
-        }
+        //ret = request_irq(36, rocklee_interrupt, IRQ_TYPE_EDGE_FALLING, DEVNAME"_intrupt", devp[i]);
+        //if (ret < 0) {
+        //    printk("Request IRQ %d failed, %d\n", i, ret);
+        //    goto ERR_STEP3;
+        //}
     }
 
     return 0;
@@ -191,7 +191,7 @@ static void rocklee_exit(void)
     printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
     
     for (i = 0; i < dev_count; i++) {
-        free_irq(36, devp[i]);
+        //free_irq(36, devp[i]);
     }
     
     for (i = 0; i < dev_count; i++) {
