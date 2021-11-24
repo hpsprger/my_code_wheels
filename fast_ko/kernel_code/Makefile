@@ -6,7 +6,7 @@ KDIR ?= /usr/src/linux-headers-5.11.0-40-generic
 PWD := $(shell pwd)
 
 modules:
-	make -C $(KDIR) M=$(PWD)   modules
+	make -C $(KDIR) M=$(PWD) modules
 
 
 .PHONEY:clean  
