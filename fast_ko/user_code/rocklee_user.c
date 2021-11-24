@@ -16,7 +16,7 @@ void main(int argc, char* argv[])
     
     if(argc < 2)
     {
-        printf("usage: ./ledtest 1 1\n");
+        printf("usage: ./rocklee_user 1 1\n");
         exit(1);
     }
 
