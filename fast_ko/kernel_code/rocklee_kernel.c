@@ -135,7 +135,7 @@ static int rocklee_init(void)
         goto ERR_STEP1;
     }
     
-    cls = class_create(THIS_MODULE, DEVNAME);
+    cls = class_create(THIS_MODULE, DEVNAME"_class");
     if (IS_ERR(cls)) {
         ret = PTR_ERR(cls);
         goto ERR_STEP1;
@@ -159,21 +159,23 @@ static int rocklee_init(void)
         //ret = request_irq(36, rocklee_interrupt, IRQ_TYPE_EDGE_FALLING, DEVNAME"_intrupt", devp[i]);
         //if (ret < 0) {
         //    printk("Request IRQ %d failed, %d\n", i, ret);
-        //    goto ERR_STEP3;
+        //    goto ERR_STEP4;
         //}
     }
 
     return 0;
-ERR_STEP3:
+ERR_STEP4:
     for (i = 0; i < dev_count; i++) {
         for(j = 0; j < ARRAY_SIZE(rocklee_sysfs_attribute); j++) {
-            device_remove_file(devp[i], &rocklee_sysfs_attribute[j]); //rm sysfs entry
+            //rm sysfs entry
+            device_remove_file(devp[i], &rocklee_sysfs_attribute[j]);
         }
     }
-ERR_STEP2:
-    for (--i; i >= minor; i--) {
+ERR_STEP3:
+    for (i = 0; i <= minor; i++) {
         device_destroy(cls, MKDEV(major, i));
-    }    
+    }
+ERR_STEP2:
     class_destroy(cls);
 ERR_STEP1:
     unregister_chrdev_region(devnum, dev_count);
@@ -190,13 +192,12 @@ static void rocklee_exit(void)
         
     printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
     
-    for (i = 0; i < dev_count; i++) {
-        //free_irq(36, devp[i]);
-    }
+    //free_irq(36, xxx);
     
     for (i = 0; i < dev_count; i++) {
         for(j = 0; j < ARRAY_SIZE(rocklee_sysfs_attribute); j++) {
-            device_remove_file(devp[i], &rocklee_sysfs_attribute[j]); //rm sysfs entry
+            //rm sysfs entry
+            device_remove_file(devp[i], &rocklee_sysfs_attribute[j]);
         }
     }
     
