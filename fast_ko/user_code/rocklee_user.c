@@ -20,7 +20,7 @@ void main(int argc, char* argv[])
         exit(1);
     }
 
-    if((fd = open("/dev/gpios_node", O_RDWR|O_NOCTTY|O_NDELAY))<0) {
+    if((fd = open(device_node, O_RDWR|O_NOCTTY|O_NDELAY))<0) {
         printf("Open %s faild\n", device_node);
         exit(1);
     }
