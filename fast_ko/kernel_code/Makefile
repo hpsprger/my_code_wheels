@@ -19,7 +19,7 @@ else
 #for depend on extra module symbols which located in current dir
 #KBUILD_EXTRA_SYMBOLS = ./Module.symvers
 
-kernel_module_name := kernel_ko
+kernel_module_name := rocklee_kernel
 obj-m := $(kernel_module_name).o
 
 #for multi files in ko 
