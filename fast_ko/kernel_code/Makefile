@@ -5,8 +5,14 @@ KDIR ?= /usr/src/linux-headers-5.11.0-40-generic
 
 PWD := $(shell pwd)
 
+#for debug compliing 
+#make V=1 ==> during complling, display detailed compiling info 
+
+#for cross compiling 
+#make -C $(KDIR) M=$(PWD) modules CROSS_COMPILE=arm-linux-
+
 modules:
-	make -C $(KDIR) M=$(PWD) modules
+	make -C $(KDIR) M=$(PWD) modules V=1
 
 
 .PHONEY:clean  
