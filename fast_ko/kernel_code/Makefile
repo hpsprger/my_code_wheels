@@ -11,7 +11,7 @@ modules:
 
 .PHONEY:clean  
 clean :
-	rm -rf .*.ko.cmd *.ko *.mod.c *.mod.o .*.mod.o.cmd *.o .*.o.cmd *.order *.symvers .tmp_versions  *.o.cmd *.mod *.cmd  .modules.order.cmd .Module.symvers.cmd  .kernel_ko.mod.cmd
+	rm -rf .*.cmd *.mod *.mod.c *.mod.o *.o *.ko modules.order Module.symvers 
 
 
 else
