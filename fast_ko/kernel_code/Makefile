@@ -35,4 +35,7 @@ obj-m := $(kernel_module_name).o
 kernel_module_name := rocklee_kernel_platformdrv
 obj-m += $(kernel_module_name).o
 
+kernel_module_name := rocklee_kernel_rbtree
+obj-m += $(kernel_module_name).o
+
 endif
