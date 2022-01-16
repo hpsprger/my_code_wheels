@@ -149,7 +149,7 @@ void show_rbtree(struct rb_root_cached *root)
     }
 	
     while (IsFifoEmpty(&rbtree_fifo) != EMPTY) {
-		ret = FifoPop(&rbtree_fifo, (unsigned long *)cur_process_node)
+		ret = FifoPop(&rbtree_fifo, (unsigned long *)cur_process_node);
         if (ret != SUCCESS) {
             printk(KERN_ALERT "FifoPop faile:%d\n", ret);
             return;
