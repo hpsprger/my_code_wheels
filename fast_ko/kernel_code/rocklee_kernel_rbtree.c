@@ -124,7 +124,15 @@ void show_rbtree(struct rb_root_cached *root)
         printk(KERN_ALERT "rb_root null\n");
         return;
     }
-
+#if 0
+    node_count ++;
+    node_count +=3;
+    test = node_count / 3;
+    printk(KERN_ALERT "\n test ======>%e \n", test);
+    printk(KERN_ALERT "\n test ======>%d \n", test);
+    printk(KERN_ALERT "\n test ======>%u \n", (unsigned int)test);
+    return;
+#endif 
     FifoInit(&rbtree_fifo);
     ret = FifoPush(&rbtree_fifo, (unsigned long)root_node);
     if (ret != SUCCESS) {
@@ -154,8 +162,6 @@ void show_rbtree(struct rb_root_cached *root)
             FifoPush(&rbtree_fifo, (unsigned long)NULL);
         }
     }
-	test = node_count / 3;
-	printk(KERN_ALERT "\n test ======>%f\n", test);
     return;
 }
 
