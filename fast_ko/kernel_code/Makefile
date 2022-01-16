@@ -33,6 +33,9 @@ clean :
 
 else
 
+#CFLAGS_MODULE += -g
+EXTRA_CFLAGS += -g
+
 #for depend on extra module symbols which located in current dir
 #KBUILD_EXTRA_SYMBOLS = ./Module.symvers
 
