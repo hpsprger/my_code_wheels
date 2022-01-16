@@ -102,6 +102,14 @@ int FifoPop(FIFO *pFifo, unsigned long *pData)
     return SUCCESS;
 }
 
+int IsFifoEmpty(FIFO *pFifo)
+{
+    if (NULL == pFifo) {
+        return EMPTY;
+    }	
+    return pFifo->status;
+}
+
 //using BFS with FIFO for displaying rbtree
 void show_rbtree(struct rb_root_cached *root)
 {
@@ -140,7 +148,13 @@ void show_rbtree(struct rb_root_cached *root)
         return;
     }
 	
-    while (FifoPop(&rbtree_fifo, (unsigned long *)cur_process_node) != EMPTY) {
+    while (IsFifoEmpty(&rbtree_fifo) != EMPTY) {
+		ret = FifoPop(&rbtree_fifo, (unsigned long *)cur_process_node)
+        if (ret != SUCCESS) {
+            printk(KERN_ALERT "FifoPop faile:%d\n", ret);
+            return;
+        }
+		
 		node_count++;
 		
 		if (cur_process_node == NULL) {
