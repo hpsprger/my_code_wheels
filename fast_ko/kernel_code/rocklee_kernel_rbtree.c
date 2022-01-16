@@ -120,6 +120,21 @@ int IsFifoEmpty(FIFO *pFifo)
     return pFifo->status;
 }
 
+//下面的这个函数是从 5.11内核中拷贝过来的，4.xx 内核中还没有
+u64 int_pow(u64 base, unsigned int exp)
+{
+	u64 result = 1;
+
+	while (exp) {
+		if (exp & 1)
+			result *= base;
+		exp >>= 1;
+		base *= base;
+	}
+
+	return result;
+}
+
 //using BFS with FIFO for displaying rbtree
 void show_rbtree(struct rb_root_cached *root)
 {
