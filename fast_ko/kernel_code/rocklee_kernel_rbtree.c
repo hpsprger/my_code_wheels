@@ -15,6 +15,15 @@
 #include <linux/slab.h>
 #include <asm/timex.h>
 
+#if 0
+//测试命令
+cat /sys/devices/virtual/rocklee_cdev_class/rocklee_cdev0/rocklee_dbg_0
+cat /sys/devices/virtual/rocklee_cdev_class/rocklee_cdev0/rocklee_dbg_1
+sudo insmod rocklee_kernel_rbtree.ko
+sudo rmmod rocklee_kernel_rbtree.ko
+sudo dmesg -c
+#endif 
+
 struct test_node {
     u32 key;
     struct rb_node rb;
