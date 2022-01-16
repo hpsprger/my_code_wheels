@@ -24,7 +24,7 @@ PWD := $(shell pwd)
 	
 #for qemu
 modules:
-	make -C $(KDIR) M=$(PWD) modules V=1 ARCH=arm CROSS_COMPILE=$(CROSS_COMPILE)
+	make -C $(KDIR) M=$(PWD) modules V=1 ARCH=arm64 CROSS_COMPILE=$(CROSS_COMPILE)
 
 .PHONEY:clean  
 clean :
