@@ -613,10 +613,25 @@ static ssize_t rocklee_show(struct device *pdevice, struct device_attribute *att
     return 0;
 }
 
+static ssize_t rocklee_show_1(struct device *pdevice, struct device_attribute *attr, char *buf)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    
+    rbtree_test_print();
+
+    if (0 == strcmp(attr->attr.name,"rocklee_dbg_0")) {
+        printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    }
+    else  if (0 == strcmp(attr->attr.name,"rocklee_dbg_1")) {
+        printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    }
+    return 0;
+}
+
 static ssize_t rocklee_store(struct device *pdevice, struct device_attribute *attr, const char *buf, size_t count)
 {
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-
+	
     if (0 == strcmp(attr->attr.name,"rocklee_dbg_0")) {
 
     } else if (0 == strcmp(attr->attr.name,"rocklee_dbg_1")) {
@@ -628,7 +643,7 @@ static ssize_t rocklee_store(struct device *pdevice, struct device_attribute *at
 
 static struct device_attribute  rocklee_sysfs_attribute[] = {
     __ATTR(rocklee_dbg_0, 0664, rocklee_show, rocklee_store),
-    __ATTR(rocklee_dbg_1, 0664, rocklee_show, rocklee_store),
+    __ATTR(rocklee_dbg_1, 0664, rocklee_show_1, rocklee_store),
 };
 
 static long rocklee_fops_ioctl( struct file *files, unsigned int cmd, unsigned long arg)
