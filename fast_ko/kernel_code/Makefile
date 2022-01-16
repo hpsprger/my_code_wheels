@@ -1,7 +1,13 @@
 ifeq ($(KERNELRELEASE),)
 
 #find /usr/src/ -name "*generated*" ==> /usr/src/linux-headers-5.11.0-40-generic
-KDIR ?= /usr/src/linux-headers-5.11.0-46-generic
+#在家里x86-64电脑上运行时 编译内核模块用的源码树路径: KDIR ?= /usr/src/linux-headers-5.11.0-46-generic
+#qemu上运行时 编译内核模块用的源码树路径: KDIR ?= /home/hpsp/rock_space/qemu/kernel/build_for_qemu
+#qemu上运行时 编译工具链:aarch64-linux-gnu-
+
+KDIR ?= /home/hpsp/rock_space/qemu/kernel/build_for_qemu
+
+CROSS_COMPILE=aarch64-linux-gnu-
 
 PWD := $(shell pwd)
 
@@ -11,9 +17,13 @@ PWD := $(shell pwd)
 #for cross compiling 
 #make -C $(KDIR) M=$(PWD) modules CROSS_COMPILE=arm-linux-
 
+#for x86-64 家里台式机
+#modules:
+#	make -C $(KDIR) M=$(PWD) modules V=1
+	
+#for qemu
 modules:
-	make -C $(KDIR) M=$(PWD) modules V=1
-
+	make -C $(KDIR) M=$(PWD) modules V=1 CROSS_COMPILE=$(CROSS_COMPILE)
 
 .PHONEY:clean  
 clean :
