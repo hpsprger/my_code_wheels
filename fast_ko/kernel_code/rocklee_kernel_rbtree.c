@@ -641,6 +641,9 @@ static ssize_t rocklee_store(struct device *pdevice, struct device_attribute *at
     return count;
 }
 
+
+///sys/devices/virtual/rocklee_cdev_class/rocklee_cdev0/rocklee_dbg_0
+///sys/devices/virtual/rocklee_cdev_class/rocklee_cdev0/rocklee_dbg_1
 static struct device_attribute  rocklee_sysfs_attribute[] = {
     __ATTR(rocklee_dbg_0, 0664, rocklee_show, rocklee_store),
     __ATTR(rocklee_dbg_1, 0664, rocklee_show_1, rocklee_store),
