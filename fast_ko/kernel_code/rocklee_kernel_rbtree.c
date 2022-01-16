@@ -539,9 +539,8 @@ static int rbtree_test_init(void)
 
 static int rbtree_test_print(void)
 {
-    int i, j;
+    int  j;
     cycles_t time1, time2, time;
-    struct rb_node *node;
 
     nodes = kmalloc_array(nnodes, sizeof(*nodes), GFP_KERNEL);
     if (!nodes)
@@ -555,11 +554,11 @@ static int rbtree_test_print(void)
     for (j = 0; j < nnodes; j++)
         insert(nodes + j, &root);
 		
-	time1 = get_cycles();
+    time1 = get_cycles();
 		
-	show_rbtree(&root);
+    show_rbtree(&root);
 
-	time2 = get_cycles();
+    time2 = get_cycles();
 		
     for (j = 0; j < nnodes; j++)
         erase(nodes + j, &root);

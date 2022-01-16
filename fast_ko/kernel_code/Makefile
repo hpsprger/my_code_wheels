@@ -1,7 +1,7 @@
 ifeq ($(KERNELRELEASE),)
 
 #find /usr/src/ -name "*generated*" ==> /usr/src/linux-headers-5.11.0-40-generic
-KDIR ?= /usr/src/linux-headers-5.11.0-40-generic
+KDIR ?= /usr/src/linux-headers-5.11.0-46-generic
 
 PWD := $(shell pwd)
 
