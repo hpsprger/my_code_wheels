@@ -143,13 +143,13 @@ void show_rbtree(struct rb_root_cached *root)
 		index = node_count - int_pow(2, level - 1);//每一层的节点编号从0开始 
 		sprintf(g_disp_buffer[level][index * 10], "%10u", rb_entry(cur_process_node, struct test_node, rb)->key);
 		
-        if (cur_node->rb_left != NULL) {
-            FifoPush(&rbtree_fifo, (unsigned long)cur_node->rb_left);
+        if (cur_process_node->rb_left != NULL) {
+            FifoPush(&rbtree_fifo, (unsigned long)cur_process_node->rb_left);
         } else {
             FifoPush(&rbtree_fifo, (unsigned long)NULL);
         }
-        if (cur_node->rb_right != NULL) {
-            FifoPush(&rbtree_fifo, (unsigned long)cur_node->rb_right);
+        if (cur_process_node->rb_right != NULL) {
+            FifoPush(&rbtree_fifo, (unsigned long)cur_process_node->rb_right);
         } else {
             FifoPush(&rbtree_fifo, (unsigned long)NULL);
         }
