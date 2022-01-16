@@ -15,6 +15,14 @@
 #include <linux/slab.h>
 #include <asm/timex.h>
 
+struct test_node {
+    u32 key;
+    struct rb_node rb;
+
+    /* following fields used for testing augmented rbtree functionality */
+    u32 val;
+    u32 augmented;
+};
 ///////////////////////////////display brtree////////////////////////////////////////////
 #include <linux/export.h>
 #include <linux/math.h>
@@ -161,15 +169,6 @@ void show_rbtree(struct rb_root_cached *root)
 __param(int, nnodes, 100, "Number of nodes in the rb-tree");
 __param(int, perf_loops, 1000, "Number of iterations modifying the rb-tree");
 __param(int, check_loops, 100, "Number of iterations modifying and verifying the rb-tree");
-
-struct test_node {
-    u32 key;
-    struct rb_node rb;
-
-    /* following fields used for testing augmented rbtree functionality */
-    u32 val;
-    u32 augmented;
-};
 
 static struct rb_root_cached root = RB_ROOT_CACHED;
 static struct test_node *nodes = NULL;
