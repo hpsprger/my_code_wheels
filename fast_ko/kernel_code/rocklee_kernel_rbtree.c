@@ -34,7 +34,8 @@ struct test_node {
 };
 ///////////////////////////////display brtree////////////////////////////////////////////
 #include <linux/export.h>
-#include <linux/math.h>
+//#include <linux/math.h>
+#include <linux/kernel.h>
 #include <linux/types.h>
 
 #define BUFFER_ROW 20
@@ -251,7 +252,7 @@ static inline void erase_cached(struct test_node *node, struct rb_root_cached *r
     rb_erase_cached(&node->rb, root);
 }
 
-
+#if 0 // 参考代码是从linux 5.11.xx 中 拿出来的，在5.11.xx 内核源码树中编译与验证OK， 4.xx 内部编译不过，固先把下面的代码 隔离起来
 #define NODE_VAL(node) ((node)->val)
 
 RB_DECLARE_CALLBACKS_MAX(static, augment_callbacks,
@@ -320,6 +321,9 @@ static void erase_augmented_cached(struct test_node *node,
 {
     rb_erase_augmented_cached(&node->rb, root, &augment_callbacks);
 }
+
+#endif 
+
 
 static void init(void)
 {
@@ -517,7 +521,7 @@ static int rbtree_test_init(void)
         }
         check(0);
     }
-
+#if 0 
     printk(KERN_ALERT "augmented rbtree testing");
 
     init();
@@ -564,7 +568,7 @@ static int rbtree_test_init(void)
         }
         check_augmented(0);
     }
-
+#endif 
     kfree(nodes);
 
     return -EAGAIN; /* Fail will directly unload the module */
