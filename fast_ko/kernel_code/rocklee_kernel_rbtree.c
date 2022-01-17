@@ -158,6 +158,8 @@ void show_rbtree(struct rb_root_cached *root)
     unsigned long index;//这是该层的第几号节点，空节点为了打印方便，也会占位，所以打印的时候通过占位法，变为一棵满二叉树 
     //float test; //验证下除法的实现
     unsigned long node_count = 0;
+	unsigned long row;
+	unsigned long col;
     int ret;
     //FIFO g_rbtree_fifo; ==> 千万不能放在这里，这个变量太大了，超过了8K，直接把内核的函数栈空间 撑爆了，定义为全局变量就OK了
     struct rb_node *root_node;
@@ -217,6 +219,13 @@ void show_rbtree(struct rb_root_cached *root)
             FifoPush(&g_rbtree_fifo, (unsigned long)NULL);
         }
     }
+	printk(KERN_ALERT "\n");
+	for (row = 0; row < BUFFER_ROW; row++) {
+		for (col = 0; col < BUFFER_COL; col++) {
+			printk(KERN_ALERT "%u", g_disp_buffer[row][col]);
+		}
+		printk(KERN_ALERT "\n");
+	}
     return;
 }
 
