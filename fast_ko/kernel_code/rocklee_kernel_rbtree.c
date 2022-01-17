@@ -116,37 +116,53 @@ int IsFifoEmpty(FIFO *pFifo)
 {
     if (NULL == pFifo) {
         return EMPTY;
-    }	
+    }    
     return pFifo->status;
 }
 
 //下面的这个函数是从 5.11内核中拷贝过来的，4.xx 内核中还没有
 u64 int_pow(u64 base, unsigned int exp)
 {
-	u64 result = 1;
+    u64 result = 1;
 
-	while (exp) {
-		if (exp & 1)
-			result *= base;
-		exp >>= 1;
-		base *= base;
-	}
+    while (exp) {
+        if (exp & 1)
+            result *= base;
+        exp >>= 1;
+        base *= base;
+    }
 
-	return result;
+    return result;
 }
+
+unsigned int get_tree_height(unsigned int node_nums)
+{
+    unsigned int i = 1;
+    unsigned int height = 1;
+    while (i < node_nums) {
+        if ((i<<height) >= node_nums) {
+			break;
+		} else {
+			height++;
+		} 
+    }
+    return height;
+}
+
+FIFO g_rbtree_fifo;
 
 //using BFS with FIFO for displaying rbtree
 void show_rbtree(struct rb_root_cached *root)
 {
     unsigned long level;  //标识是树的第几层，层数从1开始
-	unsigned long index;//这是该层的第几号节点，空节点为了打印方便，也会占位，所以打印的时候通过占位法，变为一棵满二叉树 
+    unsigned long index;//这是该层的第几号节点，空节点为了打印方便，也会占位，所以打印的时候通过占位法，变为一棵满二叉树 
     float test; //验证下除法的实现
-	unsigned long node_count = 0;
-	int ret;
-    FIFO rbtree_fifo;
+    unsigned long node_count = 0;
+    int ret;
+    //FIFO g_rbtree_fifo; ==> 千万不能放在这里，这个变量太大了，超过了8K，直接把内核的函数栈空间 撑爆了，定义为全局变量就OK了
     struct rb_node *root_node;
     struct rb_node *cur_process_node;
-	
+    
     if (root == NULL) {
         printk(KERN_ALERT "root null\n");
         return;
@@ -166,39 +182,39 @@ void show_rbtree(struct rb_root_cached *root)
     printk(KERN_ALERT "\n test ======>%u \n", (unsigned int)test);
     return;
 #endif 
-    FifoInit(&rbtree_fifo);
-    ret = FifoPush(&rbtree_fifo, (unsigned long)root_node);
+    FifoInit(&g_rbtree_fifo);
+    ret = FifoPush(&g_rbtree_fifo, (unsigned long)root_node);
     if (ret != SUCCESS) {
         printk(KERN_ALERT "FifoPush faile:%d\n", ret);
         return;
     }
-	
-    while (IsFifoEmpty(&rbtree_fifo) != EMPTY) {
-		ret = FifoPop(&rbtree_fifo, (unsigned long *)cur_process_node);
+    
+    while (IsFifoEmpty(&g_rbtree_fifo) != EMPTY) {
+        ret = FifoPop(&g_rbtree_fifo, (unsigned long *)&cur_process_node);
         if (ret != SUCCESS) {
             printk(KERN_ALERT "FifoPop faile:%d\n", ret);
             return;
         }
-		
-		node_count++;
-		
-		if (cur_process_node == NULL) {
-			continue;
-		}
-		
-		level = int_sqrt(node_count + 1); //层编号从1开始, 第n层，节点的总个数: node_count = 2的n次方 + 1 
-		index = node_count - int_pow(2, level - 1);//每一层的节点编号从0开始 
-		sprintf(g_disp_buffer[level][index * 10], "%10u", rb_entry(cur_process_node, struct test_node, rb)->key);
-		
+        
+        node_count++;
+        
+        if (cur_process_node == NULL) {
+            continue;
+        }
+        
+        level = get_tree_height(node_count + 1); //层编号从1开始, 第n层，节点的总个数: node_count = 2的n次方 + 1 
+        index = node_count - int_pow(2, level - 1);//每一层的节点编号从0开始 
+        sprintf(g_disp_buffer[level][index * 10], "%10u", rb_entry(cur_process_node, struct test_node, rb)->key);
+        
         if (cur_process_node->rb_left != NULL) {
-            FifoPush(&rbtree_fifo, (unsigned long)cur_process_node->rb_left);
+            FifoPush(&g_rbtree_fifo, (unsigned long)cur_process_node->rb_left);
         } else {
-            FifoPush(&rbtree_fifo, (unsigned long)NULL);
+            FifoPush(&g_rbtree_fifo, (unsigned long)NULL);
         }
         if (cur_process_node->rb_right != NULL) {
-            FifoPush(&rbtree_fifo, (unsigned long)cur_process_node->rb_right);
+            FifoPush(&g_rbtree_fifo, (unsigned long)cur_process_node->rb_right);
         } else {
-            FifoPush(&rbtree_fifo, (unsigned long)NULL);
+            FifoPush(&g_rbtree_fifo, (unsigned long)NULL);
         }
     }
     return;
@@ -605,13 +621,13 @@ static int rbtree_test_print(void)
 
     for (j = 0; j < nnodes; j++)
         insert(nodes + j, &root);
-		
+        
     time1 = get_cycles();
-		
+        
     show_rbtree(&root);
 
     time2 = get_cycles();
-		
+        
     for (j = 0; j < nnodes; j++)
         erase(nodes + j, &root);
 
@@ -679,7 +695,7 @@ static ssize_t rocklee_show_1(struct device *pdevice, struct device_attribute *a
 static ssize_t rocklee_store(struct device *pdevice, struct device_attribute *attr, const char *buf, size_t count)
 {
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-	
+    
     if (0 == strcmp(attr->attr.name,"rocklee_dbg_0")) {
 
     } else if (0 == strcmp(attr->attr.name,"rocklee_dbg_1")) {
