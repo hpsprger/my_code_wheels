@@ -156,7 +156,7 @@ void show_rbtree(struct rb_root_cached *root)
 {
     unsigned long level;  //标识是树的第几层，层数从1开始
     unsigned long index;//这是该层的第几号节点，空节点为了打印方便，也会占位，所以打印的时候通过占位法，变为一棵满二叉树 
-    float test; //验证下除法的实现
+    //float test; //验证下除法的实现
     unsigned long node_count = 0;
     int ret;
     //FIFO g_rbtree_fifo; ==> 千万不能放在这里，这个变量太大了，超过了8K，直接把内核的函数栈空间 撑爆了，定义为全局变量就OK了
@@ -204,7 +204,7 @@ void show_rbtree(struct rb_root_cached *root)
         
         level = get_tree_height(node_count + 1); //层编号从1开始, 第n层，节点的总个数: node_count = 2的n次方 + 1 
         index = node_count - int_pow(2, level - 1);//每一层的节点编号从0开始 
-        sprintf(g_disp_buffer[level][index * 10], "%10u", rb_entry(cur_process_node, struct test_node, rb)->key);
+        sprintf(&g_disp_buffer[level][index * 10], "%10u", rb_entry(cur_process_node, struct test_node, rb)->key);
         
         if (cur_process_node->rb_left != NULL) {
             FifoPush(&g_rbtree_fifo, (unsigned long)cur_process_node->rb_left);
