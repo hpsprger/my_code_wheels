@@ -34,7 +34,8 @@ clean :
 else
 
 #CFLAGS_MODULE += -g=
-EXTRA_CFLAGS += -g -O1 //-O0 linux4.19 编译内核模块时 编译报错，5.xx内核没有问题
+#-O0 linux4.19 编译内核模块时 编译报错，5.xx内核没有问题
+EXTRA_CFLAGS += -g -O1
 
 #for depend on extra module symbols which located in current dir
 #KBUILD_EXTRA_SYMBOLS = ./Module.symvers
