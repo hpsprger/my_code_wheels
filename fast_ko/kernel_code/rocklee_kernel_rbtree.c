@@ -250,6 +250,8 @@ static struct test_node *nodes = NULL;
 
 static struct rnd_state rnd;
 
+//插入的示例代码，插入时，从根节点开始，用一个红黑树节点 代表该数据结构(珍珠-沙盘模式)，通过比较 数据结构中的某个特性值来把该红黑树节点插入树（二分查找树的插入规则）中
+//插入后 最左边的叶子节点就是当前的最小值，而且插入 或者 删除后，该树 会自动平衡，保持搜索的最佳特性
 static void insert(struct test_node *node, struct rb_root_cached *root)
 {
     struct rb_node **new = &root->rb_root.rb_node, *parent = NULL;
@@ -263,7 +265,7 @@ static void insert(struct test_node *node, struct rb_root_cached *root)
             new = &parent->rb_right;
     }
 
-    rb_link_node(&node->rb, parent, new);
+    rb_link_node(&node->rb, parent, new); //红黑树，你插入的时候，它会根据左右子树的层高，自动保持平衡，红黑树也是一颗平衡二叉树 
     rb_insert_color(&node->rb, &root->rb_root);
 }
 
