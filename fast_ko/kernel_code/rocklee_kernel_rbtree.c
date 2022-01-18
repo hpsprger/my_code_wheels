@@ -206,7 +206,7 @@ void show_rbtree(struct rb_root_cached *root)
         
         level = get_tree_height(node_count + 1); //层编号从1开始, 第n层，节点的总个数: node_count = 2的n次方 + 1 
         index = node_count - int_pow(2, level - 1);//每一层的节点编号从0开始 
-        sprintf(&g_disp_buffer[level][index * 10], "-(%d)%10u-", index, rb_entry(cur_process_node, struct test_node, rb)->key);
+        sprintf(&g_disp_buffer[level][index * 10], "-(%d)%u-", index, rb_entry(cur_process_node, struct test_node, rb)->key);
         
         if (cur_process_node->rb_left != NULL) {
             FifoPush(&g_rbtree_fifo, (unsigned long)cur_process_node->rb_left);
