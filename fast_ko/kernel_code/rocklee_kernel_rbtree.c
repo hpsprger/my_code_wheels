@@ -206,7 +206,7 @@ void show_rbtree(struct rb_root_cached *root)
         
         level = get_tree_height(node_count + 1); //层编号从1开始, 第n层，节点的总个数: node_count = 2的n次方 + 1 
         index = node_count - int_pow(2, level - 1);//每一层的节点编号从0开始 
-        sprintf(&g_disp_buffer[level][index * 10], "%10u", rb_entry(cur_process_node, struct test_node, rb)->key);
+        sprintf(&g_disp_buffer[level][index * 10], "-(%d)%10u-", index, rb_entry(cur_process_node, struct test_node, rb)->key);
         
         if (cur_process_node->rb_left != NULL) {
             FifoPush(&g_rbtree_fifo, (unsigned long)cur_process_node->rb_left);
@@ -220,9 +220,14 @@ void show_rbtree(struct rb_root_cached *root)
         }
     }
 	printk(KERN_ALERT "\n");
-	for (row = 0; row < BUFFER_ROW; row++) {
+	for (row = 1; row < BUFFER_ROW; row++) {
+		printk(KERN_CONT "HT(%u):", row);
 		for (col = 0; col < BUFFER_COL; col++) {
-			printk(KERN_ALERT "%u", g_disp_buffer[row][col]);
+			if (g_disp_buffer[row][col] != 0) {
+                printk(KERN_CONT "%c", g_disp_buffer[row][col]);
+			} else {
+				
+			}
 		}
 		printk(KERN_ALERT "\n");
 	}
@@ -369,8 +374,8 @@ static void init(void)
 {
     int i;
     for (i = 0; i < nnodes; i++) {
-        nodes[i].key = prandom_u32_state(&rnd);
-        nodes[i].val = prandom_u32_state(&rnd);
+        nodes[i].key = prandom_u32_state(&rnd)%1000;
+        nodes[i].val = prandom_u32_state(&rnd)%1000;
     }
 }
 
