@@ -8,11 +8,9 @@
 #include <linux/irq.h>
 #include <linux/slab.h>
 
-
-typedef struct tag_rocklee_priv_device {
-    int devnum;
-}rocklee_priv_device;
-
+#define DEVNAME "rocklee"
+#define ROCKLEE_MAX_PKT_LEN      1500
+#define ETH_MAC_LEN 6
 #define DEV_NUMS (1)
 
 static int major = 0;
@@ -23,7 +21,14 @@ static struct class *cls = NULL;
 static struct cdev  *dev_obj = NULL;
 static struct device *devp[DEV_NUMS] = {NULL};
 
-#define DEVNAME "rocklee_cdev"
+struct tag_rocklee_net_priv {
+	spinlock_t lock;
+	struct net_device_stats stats;
+}rocklee_net_priv;
+
+typedef struct tag_rocklee_priv_device {
+    int devnum;
+}rocklee_priv_device;
 
 static irqreturn_t rocklee_interrupt(int irq, void *dev_id)
 {
@@ -99,6 +104,106 @@ static ssize_t rocklee_fops_read(struct file * pfile, char __user * buffer, size
     return 0;
 }
 
+static int rocklee_ndev_init(struct net_device *ndev)
+{
+	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+	netif_start_queue(ndev);
+	netif_stop_queue(ndev);
+
+	return 0;
+}
+
+static int rocklee_ndev_open(struct net_device *ndev)
+{
+	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    return 0;
+}
+
+static int rocklee_ndev_stop(struct net_device *ndev)
+{
+	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    return 0;
+}
+
+static int rocklee_ndev_start_xmit(struct sk_buff *skb, struct net_device *dev)
+{
+	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    return 0;
+}
+
+static int rocklee_ndev_change_mtu(struct net_device *dev, int new_mtu)
+{
+	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+	return -EINVAL;
+}
+
+
+static int rocklee_ndev_validate_addr(struct net_device *dev)
+{
+	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+	if (!is_valid_ether_addr(dev->dev_addr))
+		return -EADDRNOTAVAIL;
+
+	return 0;
+}
+
+static void rocklee_ndev_tx_timeout(struct net_device *dev, unsigned int txqueue)
+{
+	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+}
+
+static int rocklee_ndev_set_mac_address(struct net_device *dev, void *addr)
+{
+	struct rocklee_net_priv *priv = netdev_priv(dev);
+	struct sockaddr *hwaddr = addr;
+
+    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+
+	if (!is_valid_ether_addr(hwaddr->sa_data))
+		return -EADDRNOTAVAIL;
+	spin_lock_bh(&priv->lock);
+	memcpy(dev->dev_addr, hwaddr->sa_data, ETH_MAC_LEN);
+	spin_unlock_bh(&priv->lock);
+	return 0;
+}
+
+static struct net_device_stats *rocklee_ndev_get_stats(struct net_device *dev)
+{
+	struct rocklee_net_priv *priv = netdev_priv(dev);
+	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+	return &priv->stats;
+}
+
+static const struct net_device_ops g_rocklee_netdev_ops = {
+	.ndo_init = rocklee_ndev_init,
+    .ndo_open = rocklee_ndev_open,
+    .ndo_stop = rocklee_ndev_stop,
+    .ndo_start_xmit = rocklee_ndev_start_xmit,
+    .ndo_change_mtu = rocklee_ndev_change_mtu,
+    .ndo_validate_addr = rocklee_ndev_validate_addr,
+    .ndo_tx_timeout = rocklee_ndev_tx_timeout,
+    .ndo_set_mac_address = rocklee_ndev_set_mac_address,
+	.ndo_get_stats = rocklee_ndev_get_stats,
+};
+
+static struct ethtool_ops g_rocklee_ethtool_ops = {
+    .nway_reset = NULL,
+    .get_link = NULL,
+    .get_settings = NULL,
+    .set_settings = NULL,
+    .get_strings = NULL,
+    .get_sset_count = NULL,
+    .get_ethtool_stats = NULL,
+    .get_drvinfo = NULL,	
+    .self_test = NULL,		
+};
+
+//const struct iw_handler_def *wireless_handlers;
+//无线网卡相关的调试函数
+static struct iw_handler_def g_rocklee_wireless_ops = {
+	NULL,
+};
+
 static struct file_operations rocklee_fops = {
     .owner = THIS_MODULE, 
     .open = rocklee_fops_open,
@@ -108,14 +213,35 @@ static struct file_operations rocklee_fops = {
     .unlocked_ioctl = rocklee_fops_ioctl,
 };
 
-static int rocklee_driver_probe(struct platform_device *pdv)
+//参考 drivers/net/wireless/cisco/airo.c
+static void rocklee_ndev_setup(struct net_device *dev)
+{
+	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+	dev->wireless_handlers = &g_rocklee_wireless_ops;
+	dev->netdev_ops = &g_rocklee_netdev_ops;
+	dev->ethtool_ops = &g_rocklee_ethtool_ops;
+	dev->mtu                = ROCKLEE_MAX_PKT_LEN;
+#if 0
+	dev->min_mtu            = 68;
+	dev->max_mtu            = MIC_MSGLEN_MAX;
+	dev->addr_len           = ETH_ALEN;
+	dev->tx_queue_len       = 100;
+	eth_broadcast_addr(dev->broadcast);
+	dev->flags              = IFF_BROADCAST|IFF_MULTICAST;
+#endif
+}
+
+static int rocklee_net_driver_probe(struct platform_device *pdv)
 {
     int ret;
     int i;
     int j;
     rocklee_priv_device *pDev = NULL;
     dev_t devt;
-
+	struct device *dev = &pdv->dev;
+    struct net_device *ndev = NULL;
+    struct rocklee_net_priv *ndev_priv = NULL;
+	
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
 
     dev_obj = cdev_alloc();
@@ -151,6 +277,8 @@ static int rocklee_driver_probe(struct platform_device *pdv)
     }
     memset(pDev, 0, sizeof(rocklee_priv_device));
 
+	pdv->dev.platform_data = pDev;//dev->platform_data = data;
+	
     //create device class, ready for the next steps
     cls = class_create(THIS_MODULE, DEVNAME"_class"); 
     if(NULL == cls) {
@@ -182,10 +310,30 @@ static int rocklee_driver_probe(struct platform_device *pdv)
         //}
     }
 
-    //for passing paramter to other function
-    pdv->dev.platform_data = pDev;  
-
+    ndev = alloc_netdev(sizeof(rocklee_net_priv), "rockllee%d", NET_NAME_UNKNOWN, rocklee_ndev_setup);
+	if (ndev == NULL) {
+		printk(KERN_EMERG"alloc_netdev failed, ndev = %d\n", ndev);
+		goto ERR_STEP4:
+	}
+	
+	SET_NETDEV_DEV(ndev, dev);//#define SET_NETDEV_DEV(net, pdev) ((net)->dev.parent = (pdev))
+	
+	ndev_priv = netdev_priv(ndev);
+	memset(ndev_priv, 0, sizeof(*ndev_priv));
+	/* 然后可以给ndev_priv 各个子域段赋值 */
+	spin_lock_init(&ndev_priv->lock);
+	
+	ret = register_netdev(ndev);
+	if (ret) {
+        printk(KERN_EMERG "Fn:%s Ln:%d  failed(%d)...\n",__func__,__LINE__, ret);
+        goto ERR_STEP5;
+    }  
+	
+	platform_set_drvdata(pdv, ndev); //dev->driver_data = data;
+	
     return 0;
+ERR_STEP5:	
+	free_netdev(ndev);
 ERR_STEP4:
     for (i = 0; i < dev_count; i++) {
         for(j = 0; j < ARRAY_SIZE(rocklee_sysfs_attribute); j++) {
@@ -208,11 +356,11 @@ ERR_STEP:
     return ret; 
 }
 
-static int rocklee_driver_remove(struct platform_device *pdv)
+static int rocklee_net_driver_remove(struct platform_device *pdv)
 {
     int i;
     int j;
-    
+    struct net_device *ndev = (struct net_device *)pdv->dev.driver_data;
     //free_irq(xxx, pdv);
 
     printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
@@ -231,66 +379,68 @@ static int rocklee_driver_remove(struct platform_device *pdv)
     class_destroy(cls);
     unregister_chrdev_region(MKDEV(major, minor), dev_count);
     cdev_del(dev_obj);
-        
+	
+	unregister_netdev(ndev);
+	free_netdev(ndev);
+		
     kfree(pdv->dev.platform_data);
     pdv->dev.platform_data = 0;
     return 0;
 }
 
 
-static void rocklee_driver_shutdown(struct platform_device *pdv)
+static void rocklee_net_driver_shutdown(struct platform_device *pdv)
 {
     printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
 }
 
-static int rocklee_driver_suspend(struct platform_device *pdv,pm_message_t pmt)
-{
-    printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
-    return 0;
-}
-
-
-static int rocklee_driver_resume(struct platform_device *pdv)
+static int rocklee_net_driver_suspend(struct platform_device *pdv,pm_message_t pmt)
 {
     printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
     return 0;
 }
 
-struct platform_driver rocklee_driver = {
-    .probe = rocklee_driver_probe,
-    .remove = rocklee_driver_remove,
-    .shutdown = rocklee_driver_shutdown,
-    .suspend = rocklee_driver_suspend,
-    .resume = rocklee_driver_resume,
+
+static int rocklee_net_driver_resume(struct platform_device *pdv)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
+    return 0;
+}
+
+void rocklee_net_device_release(struct device *dev)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
+}
+
+struct platform_device rocklee_net_device = {
+    .name = DEVNAME"_net_device",//platform_device'name  and platform_driver'name must be the same
+    .id = -1,
+    .dev.release = rocklee_net_device_release,
+};
+
+struct platform_driver rocklee_net_driver = {
+    .probe = rocklee_net_driver_probe,
+    .remove = rocklee_net_driver_remove,
+    .shutdown = rocklee_net_driver_shutdown,
+    .suspend = rocklee_net_driver_suspend,
+    .resume = rocklee_net_driver_resume,
     .driver = {
-        .name = DEVNAME"_platform",//platform_device'name  and platform_driver'name must be the same
+        .name = DEVNAME"_net_device",//platform_device'name  and platform_driver'name must be the same
         .owner = THIS_MODULE,
     }
 };
-
-void rocklee_device_release(struct device *dev)
-{
-    printk(KERN_EMERG "rocklee_device_release~~~~\n");
-}
-
-struct platform_device rocklee_device = {
-    .name = DEVNAME"_platform",//platform_device'name  and platform_driver'name must be the same
-    .id = -1,
-    .dev.release = rocklee_device_release,
-};
-
 
 static int rocklee_init(void)
 {
     int ret;
     
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    ret = platform_driver_register(&rocklee_driver);
+    ret = platform_driver_register(&rocklee_net_driver);
     if (ret) {
         printk(KERN_EMERG "Fn:%s Ln:%d failed(%d)...\n",__func__,__LINE__, ret);
         return ret;
     }
-    ret = platform_device_register(&rocklee_device);
+    ret = platform_device_register(&rocklee_net_device);
     if (ret) {
         printk(KERN_EMERG "Fn:%s Ln:%d failed...\n",__func__,__LINE__, ret);
         return ret;
