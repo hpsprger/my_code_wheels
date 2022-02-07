@@ -7,6 +7,9 @@
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/slab.h>
+#include <linux/netdevice.h>
+#include <linux/etherdevice.h>
+#include <linux/spinlock_types.h>
 
 #define DEVNAME "rocklee"
 #define ROCKLEE_MAX_PKT_LEN      1500
