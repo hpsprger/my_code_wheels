@@ -451,8 +451,8 @@ static int rocklee_init(void)
 static void rocklee_exit(void)
 {
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    platform_driver_unregister(&rocklee_driver);
-    platform_device_unregister(&rocklee_device);
+    platform_driver_unregister(&rocklee_net_driver);
+    platform_device_unregister(&rocklee_net_device);
 }
 
 module_init(rocklee_init);
