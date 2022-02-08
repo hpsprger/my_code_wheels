@@ -141,7 +141,6 @@ static int rocklee_ndev_change_mtu(struct net_device *dev, int new_mtu)
 	return -EINVAL;
 }
 
-
 static int rocklee_ndev_validate_addr(struct net_device *dev)
 {
 	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
@@ -171,10 +170,11 @@ static int rocklee_ndev_set_mac_address(struct net_device *dev, void *addr)
 	return 0;
 }
 
+//该函数系统后台会隔一段时间 调用一次
 static struct net_device_stats *rocklee_ndev_get_stats(struct net_device *dev)
 {
 	rocklee_net_priv *priv = netdev_priv(dev);
-	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+	//printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
 	return &priv->stats;
 }
 
