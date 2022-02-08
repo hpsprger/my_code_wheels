@@ -24,7 +24,7 @@ static struct class *cls = NULL;
 static struct cdev  *dev_obj = NULL;
 static struct device *devp[DEV_NUMS] = {NULL};
 
-struct tag_rocklee_net_priv {
+typedef struct tag_rocklee_net_priv {
 	spinlock_t lock;
 	struct net_device_stats stats;
 }rocklee_net_priv;
@@ -150,14 +150,14 @@ static int rocklee_ndev_validate_addr(struct net_device *dev)
 	return 0;
 }
 
-static void rocklee_ndev_tx_timeout(struct net_device *dev, unsigned int txqueue)
+static void rocklee_ndev_tx_timeout(struct net_device *dev)
 {
 	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
 }
 
 static int rocklee_ndev_set_mac_address(struct net_device *dev, void *addr)
 {
-	struct rocklee_net_priv *priv = netdev_priv(dev);
+	rocklee_net_priv *priv = netdev_priv(dev);
 	struct sockaddr *hwaddr = addr;
 
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
@@ -172,7 +172,7 @@ static int rocklee_ndev_set_mac_address(struct net_device *dev, void *addr)
 
 static struct net_device_stats *rocklee_ndev_get_stats(struct net_device *dev)
 {
-	struct rocklee_net_priv *priv = netdev_priv(dev);
+	rocklee_net_priv *priv = netdev_priv(dev);
 	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
 	return &priv->stats;
 }
@@ -203,9 +203,11 @@ static struct ethtool_ops g_rocklee_ethtool_ops = {
 
 //const struct iw_handler_def *wireless_handlers;
 //无线网卡相关的调试函数
+#if 0
 static struct iw_handler_def g_rocklee_wireless_ops = {
 	NULL,
 };
+#endif
 
 static struct file_operations rocklee_fops = {
     .owner = THIS_MODULE, 
@@ -220,7 +222,7 @@ static struct file_operations rocklee_fops = {
 static void rocklee_ndev_setup(struct net_device *dev)
 {
 	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-	dev->wireless_handlers = &g_rocklee_wireless_ops;
+	//dev->wireless_handlers = &g_rocklee_wireless_ops;
 	dev->netdev_ops = &g_rocklee_netdev_ops;
 	dev->ethtool_ops = &g_rocklee_ethtool_ops;
 	dev->mtu                = ROCKLEE_MAX_PKT_LEN;
@@ -243,7 +245,7 @@ static int rocklee_net_driver_probe(struct platform_device *pdv)
     dev_t devt;
 	struct device *dev = &pdv->dev;
     struct net_device *ndev = NULL;
-    struct rocklee_net_priv *ndev_priv = NULL;
+    rocklee_net_priv *ndev_priv = NULL;
 	
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
 
@@ -270,7 +272,7 @@ static int rocklee_net_driver_probe(struct platform_device *pdv)
     if (ret) {
         printk(KERN_EMERG "Fn:%s Ln:%d  failed(%d)...\n",__func__,__LINE__, ret);
         goto ERR_STEP;
-    }    
+    }
  
     pDev = kmalloc(sizeof(rocklee_priv_device), GFP_KERNEL);
     if (NULL == pDev) {
