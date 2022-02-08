@@ -150,7 +150,7 @@ static int rocklee_ndev_validate_addr(struct net_device *dev)
 	return 0;
 }
 
-static void rocklee_ndev_tx_timeout(struct net_device *dev)
+static void rocklee_ndev_tx_timeout(struct net_device *dev, unsigned int txqueue)
 {
 	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
 }
