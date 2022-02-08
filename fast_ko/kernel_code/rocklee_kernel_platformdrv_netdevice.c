@@ -185,9 +185,9 @@ static const struct net_device_ops g_rocklee_netdev_ops = {
     .ndo_stop = rocklee_ndev_stop,
     .ndo_start_xmit = rocklee_ndev_start_xmit,
     .ndo_change_mtu = rocklee_ndev_change_mtu,
-    .ndo_validate_addr = rocklee_ndev_validate_addr,
+    .ndo_validate_addr = rocklee_ndev_validate_addr, //sudo ifconfig rockllee0  192.168.3.66
     .ndo_tx_timeout = rocklee_ndev_tx_timeout,
-    .ndo_set_mac_address = rocklee_ndev_set_mac_address,
+    .ndo_set_mac_address = rocklee_ndev_set_mac_address, //sudo ifconfig rockllee0  hw ether fc:aa:14:e3:e2:88
 	.ndo_get_stats = rocklee_ndev_get_stats,
 };
 

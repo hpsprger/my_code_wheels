@@ -2,7 +2,7 @@ ifeq ($(KERNELRELEASE),)
 
 #家里的代码目录:cd /home/hpsp/rock_space/my_code_wheels/my_code_wheels/fast_ko/kernel_code
 #find /usr/src/ -name "*generated*" ==> /usr/src/linux-headers-5.11.0-40-generic
-#在家里x86-64电脑上运行时 编译内核模块用的源码树路径: KDIR ?= /usr/src/linux-headers-5.11.0-46-generic
+#在家里x86-64电脑上运行时 编译内核模块用的源码树路径: KDIR ?= /usr/src/linux-headers-5.13.0-28-generic
 #qemu上运行时 编译内核模块用的源码树路径: KDIR ?= /home/hpsp/rock_space/iMX6Q_files/linux_for_qemu/linux_for_qume/linux-4.14.222/build_for_qemu
 #qemu上运行时 编译工具链:aarch64-linux-gnu-
 
