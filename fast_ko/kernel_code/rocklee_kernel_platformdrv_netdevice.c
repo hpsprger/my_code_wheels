@@ -131,7 +131,7 @@ static int rocklee_ndev_stop(struct net_device *ndev)
 
 static int rocklee_ndev_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
-	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+	printk(KERN_INFO "Fn:%s Ln:%d ...\n",__func__,__LINE__);
     return 0;
 }
 
@@ -174,7 +174,7 @@ static int rocklee_ndev_set_mac_address(struct net_device *dev, void *addr)
 static struct net_device_stats *rocklee_ndev_get_stats(struct net_device *dev)
 {
 	rocklee_net_priv *priv = netdev_priv(dev);
-	//printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+	printk(KERN_INFO "Fn:%s Ln:%d ...\n",__func__,__LINE__);
 	return &priv->stats;
 }
 
