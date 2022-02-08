@@ -189,6 +189,7 @@ static const struct net_device_ops g_rocklee_netdev_ops = {
 	.ndo_get_stats = rocklee_ndev_get_stats,
 };
 
+#if 0
 static struct ethtool_ops g_rocklee_ethtool_ops = {
     .nway_reset = NULL,
     .get_link = NULL,
@@ -200,6 +201,7 @@ static struct ethtool_ops g_rocklee_ethtool_ops = {
     .get_drvinfo = NULL,	
     .self_test = NULL,		
 };
+#endif
 
 //const struct iw_handler_def *wireless_handlers;
 //无线网卡相关的调试函数
@@ -224,7 +226,7 @@ static void rocklee_ndev_setup(struct net_device *dev)
 	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
 	//dev->wireless_handlers = &g_rocklee_wireless_ops;
 	dev->netdev_ops = &g_rocklee_netdev_ops;
-	dev->ethtool_ops = &g_rocklee_ethtool_ops;
+	//dev->ethtool_ops = &g_rocklee_ethtool_ops;
 	dev->mtu                = ROCKLEE_MAX_PKT_LEN;
 #if 0
 	dev->min_mtu            = 68;
