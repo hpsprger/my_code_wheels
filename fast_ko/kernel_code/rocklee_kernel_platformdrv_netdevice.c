@@ -186,6 +186,7 @@ static struct net_device_stats *rocklee_ndev_get_stats(struct net_device *dev)
 //sudo ifconfig rockllee0  192.168.4.66
 //sudo ifconfig rockllee0  hw ether fc:aa:14:e3:e2:88
 //sudo dmesg -c  
+//ifconfig
 static const struct net_device_ops g_rocklee_netdev_ops = {
 	.ndo_init = rocklee_ndev_init,
     .ndo_open = rocklee_ndev_open,
