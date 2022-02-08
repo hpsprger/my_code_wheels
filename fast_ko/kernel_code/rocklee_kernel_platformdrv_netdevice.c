@@ -160,7 +160,7 @@ static int rocklee_ndev_set_mac_address(struct net_device *dev, void *addr)
 	rocklee_net_priv *priv = netdev_priv(dev);
 	struct sockaddr *hwaddr = addr;
 
-    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    printk(KERN_EMERG "Fn:%s Ln:%d ...[0x%x][0x%x][0x%x][0x%x][0x%x][0x%x]\n",__func__,__LINE__, hwaddr->sa_data[0], hwaddr->sa_data[1], hwaddr->sa_data[2], hwaddr->sa_data[3], hwaddr->sa_data[4], hwaddr->sa_data[5]);
 
 	if (!is_valid_ether_addr(hwaddr->sa_data))
 		return -EADDRNOTAVAIL;
@@ -229,13 +229,14 @@ static void rocklee_ndev_setup(struct net_device *dev)
 	dev->netdev_ops = &g_rocklee_netdev_ops;
 	//dev->ethtool_ops = &g_rocklee_ethtool_ops;
 	dev->mtu                = ROCKLEE_MAX_PKT_LEN;
+	dev->type = ARPHRD_ETHER ; //没有赋值的话，默认是(AMPR NET/ROM), 不能更改MAC地址，配置为 这个域段赋值后ARPHRD_ETHER 变为 Link encap:Ethernet 
+	dev->addr_len = ETH_ALEN;  //ETH_ALEN 配置了这个长度后，dev->dev_addr 这个指针貌似才会被分配空间，修改MAC地址才能正常
+	dev->flags = IFF_BROADCAST|IFF_MULTICAST;
 #if 0
 	dev->min_mtu            = 68;
 	dev->max_mtu            = MIC_MSGLEN_MAX;
-	dev->addr_len           = ETH_ALEN;
 	dev->tx_queue_len       = 100;
 	eth_broadcast_addr(dev->broadcast);
-	dev->flags              = IFF_BROADCAST|IFF_MULTICAST;
 #endif
 }
 
