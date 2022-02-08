@@ -112,7 +112,7 @@ static int rocklee_ndev_init(struct net_device *ndev)
 {
 	printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
 	netif_start_queue(ndev);
-	netif_stop_queue(ndev);
+	//netif_stop_queue(ndev);
 
 	return 0;
 }
