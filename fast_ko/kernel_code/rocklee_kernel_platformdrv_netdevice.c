@@ -318,7 +318,7 @@ static int rocklee_net_driver_probe(struct platform_device *pdv)
     ndev = alloc_netdev(sizeof(rocklee_net_priv), "rockllee%d", NET_NAME_UNKNOWN, rocklee_ndev_setup);
 	if (ndev == NULL) {
 		printk(KERN_EMERG"alloc_netdev failed, ndev = %d\n", ndev);
-		goto ERR_STEP4:
+		goto ERR_STEP4;
 	}
 	
 	SET_NETDEV_DEV(ndev, dev);//#define SET_NETDEV_DEV(net, pdev) ((net)->dev.parent = (pdev))
