@@ -132,6 +132,7 @@ static int rocklee_ndev_stop(struct net_device *ndev)
 static int rocklee_ndev_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	printk(KERN_INFO "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+	
     return 0;
 }
 
@@ -187,6 +188,8 @@ static struct net_device_stats *rocklee_ndev_get_stats(struct net_device *dev)
 //sudo ifconfig rockllee0  hw ether fc:aa:14:e3:e2:88
 //sudo dmesg -c  
 //ifconfig
+//有线网卡接收数据流  ==> 看 github 的 网络包收发流程.xlsx 
+//无线网卡接收数据流  ==> 看 github 的 网络包收发流程.xlsx 
 static const struct net_device_ops g_rocklee_netdev_ops = {
 	.ndo_init = rocklee_ndev_init,
     .ndo_open = rocklee_ndev_open,
