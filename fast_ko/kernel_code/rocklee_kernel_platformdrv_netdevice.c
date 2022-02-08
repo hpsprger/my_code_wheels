@@ -179,6 +179,8 @@ static struct net_device_stats *rocklee_ndev_get_stats(struct net_device *dev)
 }
 
 //ifconfig -a 把所有up 与 没有up的网卡都打印出来   sudo ifconfig rockllee0 up |  sudo ifconfig rockllee0 down 
+//sudo insmod rocklee_kernel_platformdrv_netdevice.ko
+//sudo rmsmod rocklee_kernel_platformdrv_netdevice
 static const struct net_device_ops g_rocklee_netdev_ops = {
 	.ndo_init = rocklee_ndev_init,
     .ndo_open = rocklee_ndev_open,
