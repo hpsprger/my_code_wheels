@@ -6,6 +6,7 @@ ifeq ($(KERNELRELEASE),)
 #qemu上运行时 编译内核模块用的源码树路径: KDIR ?= /home/hpsp/rock_space/iMX6Q_files/linux_for_qemu/linux_for_qume/linux-4.14.222/build_for_qemu
 #qemu上运行时 编译工具链:aarch64-linux-gnu-
 
+#KDIR ?= /usr/src/linux-headers-5.13.0-28-generic
 KDIR ?= /home/hpsp/rock_space/iMX6Q_files/linux_for_qemu/linux_for_qume/linux-4.14.222/build_for_qemu
 
 CROSS_COMPILE=aarch64-linux-gnu-
