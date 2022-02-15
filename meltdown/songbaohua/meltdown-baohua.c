@@ -263,7 +263,7 @@ int main(int argc, char *argv[])
 
 	set_cache_hit_threshold();
 
-	printf("addr:0x%p size:%d \n", addr, size);
+	printf("addr:%p size:%d \n", addr, size);
 
 	fd = open("/proc/stolen_data", O_RDONLY);
 	if (fd < 0) {
