@@ -21,6 +21,8 @@ static int test_proc_open(struct inode *inode, struct file *file)
 	return single_open(file, test_proc_show, PDE_DATA(inode));
 }
 
+#if 0
+//for 4.x kernel 
 static const struct file_operations test_proc_fops =
 {
 	.owner = THIS_MODULE,
@@ -40,6 +42,29 @@ static __init int test_proc_init(void)
 
 	return -ENOMEM;
 }
+
+#endif 
+
+//for 5.x kernel 
+static const struct proc_ops test_proc_fops =
+{
+	.proc_open = test_proc_open,
+	.proc_read = seq_read,
+	.proc_lseek = seq_lseek,
+	.proc_release = single_release,
+};
+
+static __init int test_proc_init(void)
+{
+	printk("variable addr:%p\n", &variable);
+
+	test_entry = proc_create_data("stolen_data",0444, NULL, &test_proc_fops, &variable);
+	if (test_entry)
+		return 0;
+
+	return -ENOMEM;
+}
+
 module_init(test_proc_init);
 
 static __exit void test_proc_cleanup(void)
