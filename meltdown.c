@@ -20,7 +20,7 @@ int main( void )
     unsigned int sum = 0;
     unsigned long long t0 = 0;
     unsigned long long t1 = 0;
-    unsigned int min_time = 0xffffffff;
+    unsigned long long min_time = 0xffffffff;
     unsigned int min_time_index = 0;
     
     srand((int)time(NULL)); 
