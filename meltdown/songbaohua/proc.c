@@ -32,6 +32,7 @@ static const struct file_operations test_proc_fops =
 	.release = single_release,
 };
 
+//cat /proc/stolen_data  ==> show variable'address 
 static __init int test_proc_init(void)
 {
 	printk("variable addr:%p\n", &variable);
@@ -54,6 +55,7 @@ static const struct proc_ops test_proc_fops =
 	.proc_release = single_release,
 };
 
+//cat /proc/stolen_data  ==> show variable'address 
 static __init int test_proc_init(void)
 {
 	printk("variable addr:%p\n", &variable);
