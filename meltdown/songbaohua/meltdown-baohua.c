@@ -27,9 +27,9 @@
 
 
 #define TARGET_OFFSET	12
-#define TARGET_SIZE	(1 << TARGET_OFFSET)
+#define TARGET_SIZE	(1 << TARGET_OFFSET) //4096
 #define BITS_READ	8
-#define VARIANTS_READ	(1 << BITS_READ)
+#define VARIANTS_READ	(1 << BITS_READ) //256
 
 static char target_array[VARIANTS_READ * TARGET_SIZE];
 
@@ -38,7 +38,7 @@ void clflush_target(void)
 	int i;
 
 	for (i = 0; i < VARIANTS_READ; i++)
-		_mm_clflush(&target_array[i * TARGET_SIZE]);
+		_mm_clflush(&target_array[i * TARGET_SIZE]); //使cacheline 无效
 }
 
 extern char stopspeculate[];

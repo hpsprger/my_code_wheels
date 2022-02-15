@@ -28,7 +28,7 @@ static const struct file_operations test_proc_fops =
 {
 	.owner = THIS_MODULE,
 	.open = test_proc_open,
-	.read = seq_read,
+	.read = seq_read, //在需要创建一个由一系列数据顺序组合而成的虚拟文件或一个较大的虚拟文件时，推荐使用seq_file接口
 	.llseek = seq_lseek,
 	.release = single_release,
 };
@@ -51,7 +51,7 @@ static __init int test_proc_init(void)
 static const struct proc_ops test_proc_fops =
 {
 	.proc_open = test_proc_open,
-	.proc_read = seq_read,
+	.proc_read = seq_read,//在需要创建一个由一系列数据顺序组合而成的虚拟文件或一个较大的虚拟文件时，推荐使用seq_file接口
 	.proc_lseek = seq_lseek,
 	.proc_release = single_release,
 };
