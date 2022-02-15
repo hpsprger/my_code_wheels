@@ -18,7 +18,9 @@ int main( void )
 {
     unsigned int i,j;
     unsigned int sum = 0;
-    unsigned long long t0 = 0;
+    unsigned long long t0_0 = 0;
+    unsigned long long t1_0 = 0;
+	unsigned long long t0 = 0;
     unsigned long long t1 = 0;
     unsigned long long min_time = 0xffffffff;
     unsigned int min_time_index = 0;
@@ -26,12 +28,11 @@ int main( void )
     srand((int)time(NULL)); 
     index = rand() % 255;
         
-    t0 = get_cycle_count();
+    t0_0 = get_cycle_count();
     for (i = 0; i < 4096; i++) {
         sum += data0[index][i];
     }
-    t1 = get_cycle_count();
-    printf("index=%d delt_t=%lld \r\n", index, t1 - t0);
+    t1_0 = get_cycle_count();
     
     for (i = 0; i < 256; i++) {
         t0 = get_cycle_count();
@@ -39,13 +40,14 @@ int main( void )
             sum += data0[i][j];
         }
         t1 = get_cycle_count();
-        printf("index=%d delt_t=%lld \n", i, t1 - t0);
+        printf("i=%d delt_t=%lld \n", i, t1 - t0);
         if ((t1 - t0) < min_time) {
 			min_time = t1 - t0;
 			min_time_index = i;
 		}
     }
     
+	printf("index=%d delt_t=%lld \n", index, t1_0 - t0_0);
 	printf("min_time_index=%d min_time=%lld \n", min_time_index, min_time);
 	
     return 0;
