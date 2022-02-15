@@ -274,7 +274,8 @@ int main(int argc, char *argv[])
 	for (i = 0; i < size; i++) {
 		ret = readbyte(fd, addr);
 		if (ret == -1) {
-			perror("readbyte failed \n");
+			//perror("readbyte failed \n");
+			printf("readbyte failed \n");
 			ret = 0xff;
 		}
 		printf("read %lx = %x %c (score=%d/%d)\n",
