@@ -8,7 +8,7 @@
 unsigned int attack_address = 0; //存放你没有访问权限的内存的地址
 unsigned int index = 0;
 
-unsigned char data0[DATA_ARRAY_SIZE_0][DATA_ARRAY_SIZE] = {0};//测试访问速度的数据集合
+unsigned char data0[DATA_ARRAY_SIZE_0][DATA_ARRAY_SIZE_1] = {0};//测试访问速度的数据集合
 
 unsigned long long get_cycle_count()
 {
@@ -32,14 +32,14 @@ int main( void )
     index = rand() % (DATA_ARRAY_SIZE_0 - 1);
         
     t0_0 = get_cycle_count();
-    for (i = 0; i < DATA_ARRAY_SIZE; i++) {
+    for (i = 0; i < DATA_ARRAY_SIZE_1; i++) {
         sum += data0[index][i];
     }
     t1_0 = get_cycle_count();
     
     for (i = 0; i < DATA_ARRAY_SIZE_0; i++) {
         t0 = get_cycle_count();
-        for (j = 0; j < DATA_ARRAY_SIZE; j++) {
+        for (j = 0; j < DATA_ARRAY_SIZE_1; j++) {
             sum += data0[i][j];
         }
         t1 = get_cycle_count();
