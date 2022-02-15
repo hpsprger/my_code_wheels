@@ -31,7 +31,7 @@ int main( void )
         sum += data0[index][i];
     }
     t1 = get_cycle_count();
-    printf("index=%d delt_t=%d \r\n", index, t1 - t0);
+    printf("index=%d delt_t=%lld \r\n", index, t1 - t0);
     
     for (i = 0; i < 256; i++) {
         t0 = get_cycle_count();
@@ -39,14 +39,14 @@ int main( void )
             sum += data0[index][j];
         }
         t1 = get_cycle_count();
-        printf("index=%d delt_t=%d \r\n\r\n\r\n\r\n\r\n\r\n", i, t1 - t0);
+        printf("index=%d delt_t=%lld \n", i, t1 - t0);
         if ((t1 - t0) < min_time) {
 			min_time = t1 - t0;
 			min_time_index = i;
 		}
     }
     
-	printf("min_time_index=%d min_time=%d \r\n\r\n\r\n\r\n\r\n\r\n", min_time_index, min_time);
+	printf("min_time_index=%d min_time=%lld \n", min_time_index, min_time);
 	
     return 0;
 }
