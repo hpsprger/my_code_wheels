@@ -14,5 +14,6 @@ kernel_modules:
 clean:
 	make -C /lib/modules/$(KVERS)/build M=$(CURDIR) clean
 
+#using : ./a.out xxx(address) 4
 app:
 	gcc meltdown-baohua.c -O2 -msse2

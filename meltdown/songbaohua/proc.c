@@ -12,7 +12,8 @@ static struct proc_dir_entry  *test_entry;
 static int test_proc_show(struct seq_file *seq, void *v)
 {
 	unsigned int *ptr_var = seq->private;
-	seq_printf(seq, "%u\n", *ptr_var);
+	seq_printf(seq, "variable:0x%x\n", *ptr_var);
+	seq_printf(seq, "variable_address:0x%p\n", ptr_var);
 	return 0;
 }
 
@@ -32,11 +33,11 @@ static const struct file_operations test_proc_fops =
 	.release = single_release,
 };
 
-//cat /proc/stolen_data  ==> show variable'address 
+//cat /proc/stolen_data  ==> show variable and variable;s address
 static __init int test_proc_init(void)
 {
-	printk("variable addr:%p\n", &variable);
-
+	printk("variable addr:0x%p\n", &variable);
+	printk("variable     :0x%x\n", variable);
 	test_entry = proc_create_data("stolen_data",0444, NULL, &test_proc_fops, &variable);
 	if (test_entry)
 		return 0;
@@ -55,11 +56,11 @@ static const struct proc_ops test_proc_fops =
 	.proc_release = single_release,
 };
 
-//cat /proc/stolen_data  ==> show variable'address 
+//cat /proc/stolen_data  ==> show variable and variable;s address
 static __init int test_proc_init(void)
 {
-	printk("variable addr:%p\n", &variable);
-
+	printk("variable addr:0x%p\n", &variable);
+	printk("variable     :0x%x\n", variable);
 	test_entry = proc_create_data("stolen_data",0444, NULL, &test_proc_fops, &variable);
 	if (test_entry)
 		return 0;
