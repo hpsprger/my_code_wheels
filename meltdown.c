@@ -36,7 +36,7 @@ int main( void )
     for (i = 0; i < 256; i++) {
         t0 = get_cycle_count();
         for (j = 0; j < 4096; j++) {
-            sum += data0[index][j];
+            sum += data0[i][j];
         }
         t1 = get_cycle_count();
         printf("index=%d delt_t=%lld \n", i, t1 - t0);
