@@ -88,10 +88,17 @@ static int multicard_802d3_ndev_validate_addr(struct net_device *dev)
     return 0;
 }
 
+#if LINUX_VERSION_CODE > KERNEL_VERSION(4,14,222)
 static void multicard_802d3_ndev_tx_timeout(struct net_device *dev, unsigned int txqueue)
 {
     printk(KERN_INFO "Fn:%s Ln:%d ...\n",__func__,__LINE__);
 }
+#elif
+static void multicard_802d3_ndev_tx_timeout(struct net_device *dev)
+{
+    printk(KERN_INFO "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+}
+#endif
 
 static int multicard_802d3_ndev_set_mac_address(struct net_device *dev, void *addr)
 {
