@@ -1,4 +1,27 @@
+############# 简易的写法
+## KVERS = $(shell uname -r)
+## 
+## # Kernel modules
+## obj-m += proc.o
+## 
+## # Specify flags for the module compilation.
+## #EXTRA_CFLAGS=-g -O0
+## 
+## build: kernel_modules
+## 
+## kernel_modules:
+## 	make -C /lib/modules/$(KVERS)/build M=$(CURDIR) modules
+## 
+## clean:
+## 	make -C /lib/modules/$(KVERS)/build M=$(CURDIR) clean
+## 
+## #using : ./a.out xxx(address) 4
+## app:
+## 	gcc meltdown-baohua.c -O2 -msse2
+#############
 ifeq ($(KERNELRELEASE),)
+
+KVERS = $(shell uname -r)
 
 #家里的代码目录:cd /home/hpsp/rock_space/my_code_wheels/my_code_wheels/fast_ko/kernel_code
 #find /usr/src/ -name "*generated*" ==> /usr/src/linux-headers-5.11.0-40-generic
@@ -6,7 +29,7 @@ ifeq ($(KERNELRELEASE),)
 #qemu上运行时 编译内核模块用的源码树路径: KDIR ?= /home/hpsp/rock_space/iMX6Q_files/linux_for_qemu/linux_for_qume/linux-4.14.222/build_for_qemu
 #qemu上运行时 编译工具链:aarch64-linux-gnu-
 
-#KDIR ?= /usr/src/linux-headers-5.13.0-28-generic
+#KDIR ?= /usr/src/$(KVERS)
 KDIR ?= /home/hpsp/rock_space/iMX6Q_files/linux_for_qemu/linux_for_qume/linux-4.14.222/build_for_qemu
 
 CROSS_COMPILE=aarch64-linux-gnu-
@@ -30,7 +53,6 @@ modules:
 .PHONEY:clean  
 clean :
 	rm -rf .*.cmd *.mod *.mod.c *.mod.o *.o *.ko modules.order Module.symvers 
-
 
 else
 
