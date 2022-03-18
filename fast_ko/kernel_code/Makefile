@@ -57,4 +57,7 @@ obj-m += $(kernel_module_name).o
 kernel_module_name := rocklee_kernel_platformdrv_netdevice
 obj-m += $(kernel_module_name).o
 
+kernel_module_name := 802d3_br_802d11
+obj-m += $(kernel_module_name).o
+
 endif
