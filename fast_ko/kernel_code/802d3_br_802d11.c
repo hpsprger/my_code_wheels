@@ -11,6 +11,7 @@
 #include <linux/etherdevice.h>
 #include <linux/spinlock_types.h>
 #include <linux/if_arp.h>
+#include <linux/version.h>
 
 #define DEVNAME "multicard"
 #define MULTICARD_MAX_PKT_LEN      1500
