@@ -22,7 +22,7 @@ static int minor = 0;
 static struct class *cls = NULL;
 static struct cdev  *dev_obj = NULL;
 static struct device *devp = NULL;
-static const char *servername = NULL;
+static char *servername = NULL;
 static int tcp_port = 0;
 
 typedef struct tag_multicard_platform_priv {
