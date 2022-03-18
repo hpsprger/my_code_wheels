@@ -189,6 +189,89 @@ static void multicard_802d3_ndev_setup(struct net_device *dev)
 }
 
 /***********************************************platform driver & device ********************************************/
+static irqreturn_t multicard_interrupt(int irq, void *dev_id)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    return IRQ_HANDLED;
+}
+
+static ssize_t multicard_show(struct device *pdevice, struct device_attribute *attr, char *buf)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    if (0 == strcmp(attr->attr.name,"multicard_dbg_0")) {
+        printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    }
+    else  if (0 == strcmp(attr->attr.name,"multicard_dbg_1")) {
+        printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    }
+    return 0;
+}
+
+static ssize_t multicard_store(struct device *pdevice, struct device_attribute *attr, const char *buf, size_t count)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+
+    if (0 == strcmp(attr->attr.name,"multicard_dbg_0")) {
+
+    } else if (0 == strcmp(attr->attr.name,"multicard_dbg_1")) {
+
+    }
+    
+    return count;
+}
+
+static struct device_attribute  multicard_sysfs_attribute[] = {
+    __ATTR(multicard_dbg_0, 0664, multicard_show, multicard_store),
+    __ATTR(multicard_dbg_1, 0664, multicard_show, multicard_store),
+};
+
+static long multicard_fops_ioctl( struct file *files, unsigned int cmd, unsigned long arg)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d  cmd is %d, arg is %ld ...\n",__func__,__LINE__, cmd, arg);
+    switch(cmd)
+    {
+        case 0:
+        case 1:
+            break;
+        default:
+            return -EINVAL;
+    }
+    return 0;
+}
+
+static int multicard_fops_release(struct inode *inode, struct file *file)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    return 0;
+}
+
+static int multicard_fops_open(struct inode *inode, struct file *file)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    return 0;
+}
+
+static long multicard_fops_write(struct file * pfile, const char __user * buffer, size_t count, loff_t  * ppos)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d buffer:%s  count:%ld ...\n",__func__,__LINE__, buffer, count);
+    return 0;
+}
+
+static ssize_t multicard_fops_read(struct file * pfile, char __user * buffer, size_t count, loff_t  * ppos)
+{
+    printk(KERN_EMERG "Fn:%s Ln:%d buffer:%s  count:%ld ...\n",__func__,__LINE__, buffer, count);
+    return 0;
+}
+
+static struct file_operations multicard_fops = {
+    .owner = THIS_MODULE, 
+    .open = multicard_fops_open,
+    .release = multicard_fops_release,
+    .write = multicard_fops_write,
+    .read = multicard_fops_read,
+    .unlocked_ioctl = multicard_fops_ioctl,
+};
+
 static int multicard_platform_driver_probe(struct platform_device *pdv)
 {
     int ret;
@@ -335,7 +418,6 @@ static int multicard_platform_driver_remove(struct platform_device *pdv)
     return 0;
 }
 
-
 static void multicard_platform_driver_shutdown(struct platform_device *pdv)
 {
     printk(KERN_EMERG "Fn:%s Ln:%d...\n",__func__,__LINE__);
@@ -375,89 +457,6 @@ struct platform_driver multicard_platform_driver = {
         .name = DEVNAME"_net_device",//platform_device'name  and platform_driver'name must be the same
         .owner = THIS_MODULE,
     }
-};
-
-static irqreturn_t multicard_interrupt(int irq, void *dev_id)
-{
-    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    return IRQ_HANDLED;
-}
-
-static ssize_t multicard_show(struct device *pdevice, struct device_attribute *attr, char *buf)
-{
-    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    if (0 == strcmp(attr->attr.name,"multicard_dbg_0")) {
-        printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    }
-    else  if (0 == strcmp(attr->attr.name,"multicard_dbg_1")) {
-        printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    }
-    return 0;
-}
-
-static ssize_t multicard_store(struct device *pdevice, struct device_attribute *attr, const char *buf, size_t count)
-{
-    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-
-    if (0 == strcmp(attr->attr.name,"multicard_dbg_0")) {
-
-    } else if (0 == strcmp(attr->attr.name,"multicard_dbg_1")) {
-
-    }
-    
-    return count;
-}
-
-static struct device_attribute  multicard_sysfs_attribute[] = {
-    __ATTR(multicard_dbg_0, 0664, multicard_show, multicard_store),
-    __ATTR(multicard_dbg_1, 0664, multicard_show, multicard_store),
-};
-
-static long multicard_fops_ioctl( struct file *files, unsigned int cmd, unsigned long arg)
-{
-    printk(KERN_EMERG "Fn:%s Ln:%d  cmd is %d, arg is %ld ...\n",__func__,__LINE__, cmd, arg);
-    switch(cmd)
-    {
-        case 0:
-        case 1:
-            break;
-        default:
-            return -EINVAL;
-    }
-    return 0;
-}
-
-static int multicard_fops_release(struct inode *inode, struct file *file)
-{
-    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    return 0;
-}
-
-static int multicard_fops_open(struct inode *inode, struct file *file)
-{
-    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    return 0;
-}
-
-static long multicard_fops_write(struct file * pfile, const char __user * buffer, size_t count, loff_t  * ppos)
-{
-    printk(KERN_EMERG "Fn:%s Ln:%d buffer:%s  count:%ld ...\n",__func__,__LINE__, buffer, count);
-    return 0;
-}
-
-static ssize_t multicard_fops_read(struct file * pfile, char __user * buffer, size_t count, loff_t  * ppos)
-{
-    printk(KERN_EMERG "Fn:%s Ln:%d buffer:%s  count:%ld ...\n",__func__,__LINE__, buffer, count);
-    return 0;
-}
-
-static struct file_operations multicard_fops = {
-    .owner = THIS_MODULE, 
-    .open = multicard_fops_open,
-    .release = multicard_fops_release,
-    .write = multicard_fops_write,
-    .read = multicard_fops_read,
-    .unlocked_ioctl = multicard_fops_ioctl,
 };
 
 static int multicard_init(void)
