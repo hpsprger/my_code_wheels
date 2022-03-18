@@ -25,9 +25,6 @@ static struct device *devp = NULL;
 static const char *servername = NULL;
 static int tcp_port = 0;
 
-module_param(servername,charp,S_IRUGO);
-module_param(tcp_port,int,S_IRUGO);  
-
 typedef struct tag_multicard_platform_priv {
     spinlock_t lock;
     struct net_device_stats stats;
@@ -37,6 +34,8 @@ typedef struct tag_multicard_priv_device {
     int devnum;
 }multicard_priv_device;
 
+module_param(servername,charp,S_IRUGO);
+module_param(tcp_port,int,S_IRUGO);
 
 /***********************************************802.11***********************************************************/
 
