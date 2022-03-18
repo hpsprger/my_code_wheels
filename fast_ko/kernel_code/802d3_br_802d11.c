@@ -461,7 +461,7 @@ struct platform_driver multicard_platform_driver = {
 static int multicard_init(void)
 {
     int ret;
-    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    printk(KERN_INFO "Fn:%s Ln:%d ...\n",__func__,__LINE__);
     ret = platform_driver_register(&multicard_platform_driver);
     if (ret) {
         printk(KERN_EMERG "Fn:%s Ln:%d failed(%d)...\n",__func__,__LINE__, ret);
@@ -477,7 +477,7 @@ static int multicard_init(void)
 
 static void multicard_exit(void)
 {
-    printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
+    printk(KERN_INFO "Fn:%s Ln:%d ...\n",__func__,__LINE__);
     platform_driver_unregister(&multicard_platform_driver);
     platform_device_unregister(&multicard_platform_device);
 }
