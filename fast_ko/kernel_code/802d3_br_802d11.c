@@ -94,7 +94,7 @@ static void multicard_802d3_ndev_tx_timeout(struct net_device *dev, unsigned int
 {
     printk(KERN_INFO "Fn:%s Ln:%d ...\n",__func__,__LINE__);
 }
-#elif
+#else
 static void multicard_802d3_ndev_tx_timeout(struct net_device *dev)
 {
     printk(KERN_INFO "Fn:%s Ln:%d ...\n",__func__,__LINE__);
