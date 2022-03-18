@@ -203,7 +203,7 @@ static int rocklee_net_driver_probe(struct platform_device *pdv)
     cdev_init(dev_obj, &rocklee_fops);
     
     //DEVNAME:cat /proc/devices ==> show name 
-    ret = alloc_chrdev_region(&devt, minor, dev_count, DEVNAME"_device");
+    ret = alloc_chrdev_region(&devt, minor, 1, DEVNAME"_device");
     if (ret) {
         printk(KERN_EMERG "Fn:%s Ln:%d  failed(%d)...\n",__func__,__LINE__, ret);
         goto ERR_STEP;
@@ -212,7 +212,7 @@ static int rocklee_net_driver_probe(struct platform_device *pdv)
     printk(KERN_EMERG"MAJOR(devt)=%d  MINOR(devt)=%d \n", MAJOR(devt), MINOR(devt));
     
     //insert cdev using devt  into system
-    ret = cdev_add(dev_obj, devt, dev_count);
+    ret = cdev_add(dev_obj, devt, 1);
     if (ret) {
         printk(KERN_EMERG "Fn:%s Ln:%d  failed(%d)...\n",__func__,__LINE__, ret);
         goto ERR_STEP;
@@ -291,7 +291,7 @@ ERR_STEP3:
 ERR_STEP2:
     class_destroy(cls);
 ERR_STEP1:
-    unregister_chrdev_region(devt, dev_count);
+    unregister_chrdev_region(devt, 1);
     kfree(pDev);
 ERR_STEP:
     cdev_del(dev_obj);
@@ -315,7 +315,7 @@ static int rocklee_net_driver_remove(struct platform_device *pdv)
     
     device_destroy(cls, MKDEV(major, minor));
     class_destroy(cls);
-    unregister_chrdev_region(MKDEV(major, minor), dev_count);
+    unregister_chrdev_region(MKDEV(major, minor), 1);
     cdev_del(dev_obj);
     
     unregister_netdev(ndev);
