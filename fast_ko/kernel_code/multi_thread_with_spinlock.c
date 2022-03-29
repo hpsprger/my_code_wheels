@@ -26,21 +26,21 @@ int thread_func(void *data)
     return 0;
 }
 
-static unsigned int variable=0x12345678;
 static struct proc_dir_entry  *test_entry;
 
 static int test_proc_show(struct seq_file *seq, void *v)
 {
+#if 0
 	struct cpumask mask = {0x2};
 	unsigned int *ptr_var = seq->private;
-	//seq_printf(seq, "variable:0x%x\n", *ptr_var);
-	//seq_printf(seq, "variable_address:0x%p\n", ptr_var);
+
 	struct task_struct * p_task = kthread_create(thread_func, NULL, "kernel_thrd");
 	if (!IS_ERR(p_task)) {
 		//if (p_sched_setaffinity != NULL)
 		//    p_sched_setaffinity(p_task->pid, &mask);
         wake_up_process(p_task);
 	}	
+#endif
 	return 0;
 }
 
@@ -61,13 +61,20 @@ static const struct proc_ops test_proc_fops =
 //cat /proc/stolen_data  ==> show variable and variable;s address
 static __init int test_proc_init(void)
 {
-	printk("variable addr:0x%p\n", &variable);
-	printk("variable     :0x%x\n", variable);
+	struct cpumask mask = {0x2};
+	struct task_struct *p_task;
 	
 	//p_sched_setaffinity = kallsyms_lookup_name("sched_setaffinity");
 	test_entry = proc_create_data("stolen_data",0444, NULL, &test_proc_fops, &variable);
 	if (test_entry)
 		return 0;
+
+    p_task = kthread_create(thread_func, NULL, "kernel_thrd");
+	if (!IS_ERR(p_task)) {
+		//if (p_sched_setaffinity != NULL)
+		//    p_sched_setaffinity(p_task->pid, &mask);
+        wake_up_process(p_task);
+	}
 
 	return -ENOMEM;
 }
