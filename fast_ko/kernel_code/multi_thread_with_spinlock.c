@@ -7,7 +7,7 @@
 #include <asm/uaccess.h>
 #include <linux/sched.h>   //wake_up_process()
 #include <linux/kthread.h>//kthread_create()、kthread_run()
-#include <err.h>//IS_ERR() PTR_ERR()
+#include <linux/err.h>//IS_ERR() PTR_ERR()
 
 int thread_func(void *data)
 {
