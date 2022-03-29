@@ -22,12 +22,13 @@ static struct proc_dir_entry  *test_entry;
 
 static int test_proc_show(struct seq_file *seq, void *v)
 {
+	struct cpumask mask = {0x2};
 	unsigned int *ptr_var = seq->private;
 	//seq_printf(seq, "variable:0x%x\n", *ptr_var);
 	//seq_printf(seq, "variable_address:0x%p\n", ptr_var);
 	struct task_struct * p_task = kthread_create(thread_func, NULL, "kernel_thrd");
 	if (!IS_ERR(p_task)) {
-		sched_setaffinity(p_task->pid, 0x2);
+		sched_setaffinity(p_task->pid, &mask);
         wake_up_process(p_task);
 	}	
 	return 0;
