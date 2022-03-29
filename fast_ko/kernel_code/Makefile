@@ -30,7 +30,7 @@ KVERS = $(shell uname -r)
 #qemu上运行时 编译工具链:aarch64-linux-gnu-
 
 #KDIR ?= /usr/src/linux-headers-$(KVERS)
-KDIR ?= /home/hpsp/rock_space/iMX6Q_files/linux_for_qemu/linux_for_qume/linux-4.14.222/build_for_qemu
+KDIR ?= /home/hpsp/rock_space/iMX6Q_files/linux_5/linux-5.10.102/build_for_qemu
 
 CROSS_COMPILE=aarch64-linux-gnu-
 
