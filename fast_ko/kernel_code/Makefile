@@ -52,7 +52,7 @@ modules:
 
 .PHONEY:clean  
 clean :
-	rm -rf .*.cmd *.mod *.mod.c *.mod.o *.o *.ko modules.order Module.symvers 
+	rm -rf .*.cmd *.mod *.mod.c *.mod.o *.o *.o.d *.ko modules.order Module.symvers 
 
 else
 
