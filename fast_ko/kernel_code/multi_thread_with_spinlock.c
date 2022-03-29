@@ -14,9 +14,14 @@ static long (*p_sched_setaffinity)(pid_t pid, const struct cpumask *in_mask) = N
 
 int thread_func(void *data)
 {
-	int cpuid = get_cpu();
-	int thread_id = task_pid_nr(current);
-	printk("thread_func(%d) is  running  in cpu(%d)... \n", thread_id, cpuid);
+    int cpuid;
+	int thread_id;
+	while (1) {
+	    cpuid = get_cpu();
+	    thread_id = task_pid_nr(current);
+	    printk(KERN_INFO"thread_func(%d) is  running  in cpu(%d)... \n", thread_id, cpuid);
+		msleep(1000);
+	}
     return 0;
 }
 
