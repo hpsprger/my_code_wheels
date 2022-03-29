@@ -9,6 +9,7 @@
 #include <linux/kthread.h>
 #include <linux/err.h>
 #include <linux/kallsyms.h>
+#include <linux/delay.h>
 
 static long (*p_sched_setaffinity)(pid_t pid, const struct cpumask *in_mask) = NULL;
 
