@@ -64,11 +64,6 @@ static __init int test_proc_init(void)
 {
 	struct cpumask mask = {0x2};
 	struct task_struct *p_task;
-	
-	//p_sched_setaffinity = kallsyms_lookup_name("sched_setaffinity");
-	test_entry = proc_create_data("stolen_data",0444, NULL, &test_proc_fops, &variable);
-	if (test_entry)
-		return 0;
 
     p_task = kthread_create(thread_func, NULL, "kernel_thrd");
 	if (!IS_ERR(p_task)) {
@@ -76,6 +71,11 @@ static __init int test_proc_init(void)
 		//    p_sched_setaffinity(p_task->pid, &mask);
         wake_up_process(p_task);
 	}
+
+	//p_sched_setaffinity = kallsyms_lookup_name("sched_setaffinity");
+	test_entry = proc_create_data("stolen_data",0444, NULL, &test_proc_fops, &variable);
+	if (test_entry)
+		return 0;
 
 	return -ENOMEM;
 }
