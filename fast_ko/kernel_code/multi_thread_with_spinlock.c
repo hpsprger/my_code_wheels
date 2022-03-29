@@ -26,6 +26,7 @@ int thread_func(void *data)
     return 0;
 }
 
+static unsigned int variable=0x12345678;
 static struct proc_dir_entry  *test_entry;
 
 static int test_proc_show(struct seq_file *seq, void *v)
