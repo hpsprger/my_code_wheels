@@ -63,8 +63,8 @@ EXTRA_CFLAGS += -g -O1
 #for depend on extra module symbols which located in current dir
 #KBUILD_EXTRA_SYMBOLS = ./Module.symvers
 
-kernel_module_name := rocklee_kernel
-obj-m := $(kernel_module_name).o
+#kernel_module_name := rocklee_kernel
+#obj-m := $(kernel_module_name).o
 
 #for multi files in ko 
 #$(kernel_module_name)-objs := rock_gpio_led.o  rock_gpio_led_sub.o 
@@ -79,7 +79,10 @@ obj-m := $(kernel_module_name).o
 #kernel_module_name := rocklee_kernel_platformdrv_netdevice
 #obj-m += $(kernel_module_name).o
 
-kernel_module_name := 802d3_br_802d11
+#kernel_module_name := 802d3_br_802d11
+#obj-m += $(kernel_module_name).o
+
+kernel_module_name := multi_thread_with_spinlock
 obj-m += $(kernel_module_name).o
 
 endif
