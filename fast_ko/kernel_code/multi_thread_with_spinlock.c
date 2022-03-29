@@ -10,7 +10,7 @@
 #include <linux/err.h>
 #include <linux/kallsyms.h>
 
-static long (*p_sched_setaffinity)(pid_t pid, const struct cpumask *in_mask) = null;
+static long (*p_sched_setaffinity)(pid_t pid, const struct cpumask *in_mask) = NULL;
 
 int thread_func(void *data)
 {
@@ -31,7 +31,7 @@ static int test_proc_show(struct seq_file *seq, void *v)
 	//seq_printf(seq, "variable_address:0x%p\n", ptr_var);
 	struct task_struct * p_task = kthread_create(thread_func, NULL, "kernel_thrd");
 	if (!IS_ERR(p_task)) {
-		if (p_sched_setaffinity != null)
+		if (p_sched_setaffinity != NULL)
 		    p_sched_setaffinity(p_task->pid, &mask);
         wake_up_process(p_task);
 	}	
@@ -58,8 +58,7 @@ static __init int test_proc_init(void)
 	printk("variable addr:0x%p\n", &variable);
 	printk("variable     :0x%x\n", variable);
 	
-	p_sched_setaffinity = kallsyms_lookup_name("sched_setaffinity")
-	
+	p_sched_setaffinity = kallsyms_lookup_name("sched_setaffinity");
 	test_entry = proc_create_data("stolen_data",0444, NULL, &test_proc_fops, &variable);
 	if (test_entry)
 		return 0;
