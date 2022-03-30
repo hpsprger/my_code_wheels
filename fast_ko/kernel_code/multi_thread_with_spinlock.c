@@ -21,11 +21,7 @@ int thread_func(void *data)
 	    cpuid = get_cpu();
 	    thread_id = task_pid_nr(current);
 	    printk(KERN_INFO"thread_func(%d) is  running  in cpu(%d)... \n", thread_id, cpuid);
-		//msleep(1000);
-		set_current_state(TASK_UNINTERRUPTIBLE);
-		if(kthread_should_stop())
-			break;
-		schedule_timeout(HZ);
+		msleep(1000);
 	}
     return 0;
 }
@@ -35,7 +31,6 @@ static struct proc_dir_entry  *test_entry;
 
 static int test_proc_show(struct seq_file *seq, void *v)
 {
-#if 0
 	struct cpumask mask = {0x2};
 	unsigned int *ptr_var = seq->private;
 
@@ -45,7 +40,6 @@ static int test_proc_show(struct seq_file *seq, void *v)
 		//    p_sched_setaffinity(p_task->pid, &mask);
         wake_up_process(p_task);
 	}	
-#endif
 	return 0;
 }
 
@@ -66,16 +60,6 @@ static const struct proc_ops test_proc_fops =
 //cat /proc/stolen_data  ==> show variable and variable;s address
 static __init int test_proc_init(void)
 {
-	struct cpumask mask = {0x2};
-	struct task_struct *p_task;
-
-    p_task = kthread_create(thread_func, NULL, "kernel_thrd");
-	if (!IS_ERR(p_task)) {
-		//if (p_sched_setaffinity != NULL)
-		//    p_sched_setaffinity(p_task->pid, &mask);
-        wake_up_process(p_task);
-	}
-
 	//p_sched_setaffinity = kallsyms_lookup_name("sched_setaffinity");
 	test_entry = proc_create_data("stolen_data",0444, NULL, &test_proc_fops, &variable);
 	if (test_entry)
