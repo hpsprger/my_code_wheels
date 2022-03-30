@@ -21,7 +21,11 @@ int thread_func(void *data)
 	    cpuid = get_cpu();
 	    thread_id = task_pid_nr(current);
 	    printk(KERN_INFO"thread_func(%d) is  running  in cpu(%d)... \n", thread_id, cpuid);
-		msleep(1000);
+		//msleep(1000);
+		set_current_state(TASK_UNINTERRUPTIBLE);
+		if(kthread_should_stop())
+			break;
+		schedule_timeout(HZ);
 	}
     return 0;
 }
