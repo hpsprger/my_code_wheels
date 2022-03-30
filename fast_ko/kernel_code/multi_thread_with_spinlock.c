@@ -38,8 +38,8 @@ static int test_proc_show(struct seq_file *seq, void *v)
 	if (!IS_ERR(p_task)) {
 		//if (p_sched_setaffinity != NULL)
 		//    p_sched_setaffinity(p_task->pid, &mask);
-        //wake_up_process(p_task);
-	}	
+        wake_up_process(p_task);
+	}
 	return 0;
 }
 
