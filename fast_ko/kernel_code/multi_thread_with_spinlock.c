@@ -22,6 +22,9 @@ int thread_func(void *data)
 	    thread_id = task_pid_nr(current);
 	    printk(KERN_INFO"thread_func(%d) is  running  in cpu(%d)... \n", thread_id, cpuid);
 		msleep(1000);
+		if (kthread_should_stop()) {
+			break;
+		}
 	}
     return 0;
 }
