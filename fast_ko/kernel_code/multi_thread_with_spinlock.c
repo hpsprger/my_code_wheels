@@ -39,7 +39,6 @@ static int test_proc_show(struct seq_file *seq, void *v)
 	struct cpumask mask = {0x2};
 	unsigned int *ptr_var = seq->private;
 	struct task_struct * p_task1 = 0;
-	struct task_struct * p_task2 = 0;
 	
 	p_task1 = kthread_create(thread_func, NULL, "kernel_thrd1");
 	if (!IS_ERR(p_task1)) {
@@ -47,13 +46,6 @@ static int test_proc_show(struct seq_file *seq, void *v)
 		//    p_sched_setaffinity(p_task->pid, &mask);
         wake_up_process(p_task1);
 	}
-
-	p_task2 = kthread_create(thread_func, NULL, "kernel_thrd2");
-	if (!IS_ERR(p_task2)) {
-		//if (p_sched_setaffinity != NULL)
-		//    p_sched_setaffinity(p_task->pid, &mask);
-        wake_up_process(p_task2);
-	}	
 	
 	return 0;
 }
