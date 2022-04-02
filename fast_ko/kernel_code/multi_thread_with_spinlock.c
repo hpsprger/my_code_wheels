@@ -25,7 +25,8 @@ int thread_func(void *data)
 		if (kthread_should_stop()) {
 			break;
 		} else {
-			schedule_timeout(5*HZ);
+			//schedule_timeout(5*HZ);
+			msleep(5000);
 		}
 	}
     return 0;
