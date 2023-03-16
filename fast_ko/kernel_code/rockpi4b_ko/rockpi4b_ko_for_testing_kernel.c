@@ -45,8 +45,6 @@ static irqreturn_t rockllee_interrupt(int irq, void *dev_id)
 static ssize_t rockllee_show(struct device *pdevice, struct device_attribute *attr, char *buf)
 {
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    
-    rbtree_test_init();
 
     if (0 == strcmp(attr->attr.name,"rockllee_dbg_0")) {
         printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
@@ -60,8 +58,6 @@ static ssize_t rockllee_show(struct device *pdevice, struct device_attribute *at
 static ssize_t rockllee_show_1(struct device *pdevice, struct device_attribute *attr, char *buf)
 {
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    
-    rbtree_test_print();
 
     if (0 == strcmp(attr->attr.name,"rockllee_dbg_0")) {
         printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
