@@ -25,7 +25,10 @@ static int rockllee_proc_open(struct inode *inode, struct file *file)
 
 ssize_t	rockllee_proc_write(struct file *file, const char *buffer, size_t len, loff_t *pos)
 {
-	printk("rockllee_proc_write ....len=%d pos=0x%x data=0x%x \n", len, pos, buffer[0]);
+	char *endptr;
+	long num = simple_strtol(buffer, &endptr, 10); // 转换十进制字符串为 long 类型
+	
+	printk("rockllee_proc_write ....len=%d pos=0x%x data=0x%x  num=%d \n", len, pos, buffer[0], num);
 	return len;
 }
 
