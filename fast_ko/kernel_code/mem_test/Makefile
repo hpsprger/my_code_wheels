@@ -50,4 +50,12 @@ kernel_modules:
 
 clean:
 	rm -rf .*.cmd *.mod *.mod.c *.mod.o *.o *.o.d *.ko modules.order Module.symvers 
+	
+mount_img:
+	cd  /home/hpsp/rock_space/iMX6Q_files/initrd_for_qemu   
+	mkdir  -p /home/hpsp/rock_space/iMX6Q_files/initrd_for_qemu/mount 
+	sudo mount  /home/hpsp/rock_space/iMX6Q_files/initrd_for_qemu/initrd_64le_250M.ext4  /home/hpsp/rock_space/iMX6Q_files/initrd_for_qemu/mount
 
+install:
+	sudo cp ./mem_test.ko /home/hpsp/rock_space/iMX6Q_files/initrd_for_qemu/mount	
+	sudo chmod -Rf 777  /home/hpsp/rock_space/iMX6Q_files/initrd_for_qemu/mount	
