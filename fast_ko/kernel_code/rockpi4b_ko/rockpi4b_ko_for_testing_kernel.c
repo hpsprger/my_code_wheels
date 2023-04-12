@@ -14,6 +14,9 @@
 #include <linux/random.h>
 #include <linux/slab.h>
 #include <asm/timex.h>
+#include <linux/kallsyms.h>
+#include <linux/kprobes.h>
+#include <linux/console.h>
 
 #if 0
 //测试命令
@@ -42,11 +45,105 @@ static irqreturn_t rockllee_interrupt(int irq, void *dev_id)
     return IRQ_HANDLED;
 }
 
+static int handler_pre(struct kprobe *p, struct pt_regs *regs)
+{ 
+    return 0;
+}
+
+static struct kprobe kp = {
+ .symbol_name = "kallsyms_lookup_name",
+};
+
+
+// 函数定义
+typedef unsigned long (*kallsyms_lookup_name_t)(const char *name);
+static kallsyms_lookup_name_t fn_kallsyms_lookup_name = 0;
+
+int get_kallsyms_lookup_name(void)
+{
+    int ret = -1;
+    kp.pre_handler = handler_pre;
+    // register_kprobe成功返回0
+    ret = register_kprobe(&kp);
+    if (ret < 0) {
+        printk(KERN_EMERG "register_kprobe failed, returned %d\n", ret);
+        return ret;
+    }
+    printk(KERN_EMERG "Planted kprobe at %p\n", kp.addr);
+    fn_kallsyms_lookup_name = (kallsyms_lookup_name_t)(void*)kp.addr;
+    unregister_kprobe(&kp);
+    return ret;
+}
+
+unsigned long get_symbol_addr(const char *name)
+{
+    unsigned long addr;
+    // 1. 获取kallsyms_lookup_name函数指针
+    get_kallsyms_lookup_name();
+    // 2. 使用kallsyms_lookup_name()获取系统调用表地址 
+    if (fn_kallsyms_lookup_name == NULL) {
+        printk(KERN_EMERG "fn_kallsyms_lookup_name is NULL\n");
+        return 0;
+    }
+    addr = fn_kallsyms_lookup_name(name);
+    return addr;
+}
+
+#if 0
+
+通过 ko 来窥看内核中的私有数据的方法 
+ko窥看内核数据(包含static私有变量 + export导出符号)的方法
+
+unsigned long symbol_addr;
+struct console *p;
+int count = 0;
+
+extern struct console *console_drivers;
+extern int preferred_console = -1;
+
+p = console_drivers;
+printk(KERN_EMERG "Fn:%s Ln:%d  console_drivers=0x%llx...\n",__func__,__LINE__, console_drivers);
+while (p) {
+    printk(KERN_EMERG "count = %d --------------\n", count++);
+    printk(KERN_EMERG "console_name = %s", p->name);
+    p = p->next;
+}
+
+p1 = &preferred_console;
+printk(KERN_EMERG "Fn:%s Ln:%d  preferred_console=0x%llx  &preferred_console=0x%llx...\n",__func__,__LINE__, &preferred_console, preferred_console);
+
+symbol_addr = get_symbol_addr("console_drivers");
+
+printk(KERN_EMERG "Fn:%s Ln:%d  kallsyms_lookup_name=0x%llx ==> 0xffffffc0100d1630 \n", __func__, __LINE__, symbol_addr);
+#endif
+
+extern struct console *console_drivers;
+extern int preferred_console = -1;
+
+// cat /sys/devices/virtual/rockllee_cdev_class/rockllee_cdev0/rockllee_dbg_0
+// cat /sys/devices/virtual/rockllee_cdev_class/rockllee_cdev0/rockllee_dbg_1
 static ssize_t rockllee_show(struct device *pdevice, struct device_attribute *attr, char *buf)
 {
+    unsigned long symbol_addr;
+    struct console *p;
+    int count = 0;
+
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    
-    rbtree_test_init();
+
+    /* export symbol  
+            struct console *console_drivers;
+            EXPORT_SYMBOL_GPL(console_drivers);
+    */
+    p = console_drivers;  
+    printk(KERN_EMERG "Fn:%s Ln:%d  console_drivers=0x%llx...\n",__func__,__LINE__, console_drivers);
+    while (p) {
+        printk(KERN_EMERG "count = %d --------------\n", count++);
+        printk(KERN_EMERG "console_name = %s", p->name);
+        p = p->next;
+    }
+
+    /* static symbol ==> static int preferred_console = -1; */
+    printk(KERN_EMERG "Fn:%s Ln:%d  preferred_console=0x%llx  &preferred_console=0x%llx...\n",__func__,__LINE__, &preferred_console, preferred_console);
 
     if (0 == strcmp(attr->attr.name,"rockllee_dbg_0")) {
         printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
@@ -60,8 +157,6 @@ static ssize_t rockllee_show(struct device *pdevice, struct device_attribute *at
 static ssize_t rockllee_show_1(struct device *pdevice, struct device_attribute *attr, char *buf)
 {
     printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
-    
-    rbtree_test_print();
 
     if (0 == strcmp(attr->attr.name,"rockllee_dbg_0")) {
         printk(KERN_EMERG "Fn:%s Ln:%d ...\n",__func__,__LINE__);
