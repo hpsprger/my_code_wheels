@@ -44,7 +44,7 @@ static const struct proc_ops rockllee_proc_fops =
 {
 	.proc_open = rockllee_proc_open,
 	.proc_read = seq_read,    //读这个文件的buffer里面的内容 到用户空间进行显示
-	.proc_write = seq_write,  //写用户空间的内容数据到这个文件的buffer中去 
+	.proc_write = rockllee_proc_write,  //写用户空间的内容数据到这个文件的buffer中去 
 	.proc_lseek = seq_lseek,
 	.proc_release = single_release,
 };
