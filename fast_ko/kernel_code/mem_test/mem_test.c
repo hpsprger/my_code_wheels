@@ -22,6 +22,11 @@ static int rockllee_proc_open(struct inode *inode, struct file *file)
 	return single_open(file, rockllee_proc_show, PDE_DATA(inode)); // 打开文件的时候，为该文件绑定对于的show函数
 }
 
+ssize_t	rockllee_proc_write(struct file *file, const char *buffer, size_t len, loff_t * pos)
+{
+	printk("rockllee_proc_write ....\n");
+	return 0;
+}
 
 // seq_file系列函数是为了方便内核导出信息到 sysfs、debugfs、procfs 实现的
 // 以往的内核也存在各种形式的实现，但是都无法避免个别实现会产生一些漏洞，
