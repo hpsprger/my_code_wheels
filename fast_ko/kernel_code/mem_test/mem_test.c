@@ -5,6 +5,7 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <asm/uaccess.h>
+#include <linux/slab.h>
 
 static unsigned int variable=0x12345678;
 static struct proc_dir_entry  *proc_entry;
@@ -27,8 +28,16 @@ ssize_t	rockllee_proc_write(struct file *file, const char *buffer, size_t len, l
 {
 	char *endptr;
 	long num = simple_strtol(buffer, &endptr, 10); // 转换十进制字符串为 long 类型
-	
+	char *p = NULL;
 	printk("rockllee_proc_write ....len=%d pos=0x%x data=0x%x  num=%d \n", len, pos, buffer[0], num);
+
+	p = kmalloc(num, GFP_KERNEL);
+	if (p == NULL) {
+		printk("kmalloc fale p=0x%p   num=0x%x!!! \n", p, num);
+	} else {
+		printk("kmalloc ok   p=0x%p   num=0x%x!!! \n", p, num);
+	}
+
 	return len;
 }
 
