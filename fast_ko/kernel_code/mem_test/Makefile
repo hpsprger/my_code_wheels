@@ -59,3 +59,4 @@ mount_img:
 install:
 	sudo cp ./mem_test.ko /home/hpsp/rock_space/iMX6Q_files/initrd_for_qemu/mount	
 	sudo chmod -Rf 777  /home/hpsp/rock_space/iMX6Q_files/initrd_for_qemu/mount	
+	ls -al /home/hpsp/rock_space/iMX6Q_files/initrd_for_qemu/mount
