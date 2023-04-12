@@ -24,7 +24,7 @@ static int rockllee_proc_open(struct inode *inode, struct file *file)
 
 ssize_t	rockllee_proc_write(struct file *file, const char *buffer, size_t len, loff_t *pos)
 {
-	printk("rockllee_proc_write ....len=%d pos=0x%x\n", len, pos);
+	printk("rockllee_proc_write ....len=%d pos=0x%x data=0x%x \n", len, pos, buffer[0]);
 	return len;
 }
 
