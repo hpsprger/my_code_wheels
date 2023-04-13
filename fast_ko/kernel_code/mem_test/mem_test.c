@@ -38,9 +38,9 @@ ssize_t	rockllee_proc_write(struct file *file, const char *buffer, size_t len, l
 
 	p = kmalloc(num, GFP_KERNEL);
 	if (p == NULL) {
-		printk("kmalloc fail.... p=0x%p   num=0x%x!!! \n", p, num);
+		printk("kmalloc fail.... p=0x%llx  num=0x%x!!! \n", p, num);
 	} else {
-		printk("kmalloc ok   p=0x%p   num=0x%x!!! \n", p, num);
+		printk("kmalloc ok   p=0x%llx   num=0x%x!!! \n", p, num);
 	}
 
 	return len;
