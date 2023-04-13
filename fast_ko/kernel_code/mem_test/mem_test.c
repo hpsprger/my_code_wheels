@@ -15,7 +15,12 @@ static int rockllee_proc_show(struct seq_file *seq, void *v)
 	unsigned int *ptr_var = seq->private;
 	printk("rockllee_proc_show ....\n");
 	seq_printf(seq, "variable:0x%x\n", *ptr_var);         // 内容打印到了seq_file 对应的 buffer中了  ==> 用户态中读取这个proc文件的时候，每次都会首先要打开文件的，所以这里都会准备好数据
-	seq_printf(seq, "variable_address:0x%p\n", ptr_var);  // 同上
+	seq_printf(seq, "variable_address:0x%llx\n", ptr_var);  // 同上
+	
+	seq_printf(seq, "STRUCT_PAGE_MAX_SHIFT:0x%llx \n", STRUCT_PAGE_MAX_SHIFT); 
+	seq_printf(seq, "VMEMMAP_START:0x%llx \n", VMEMMAP_START); 
+	seq_printf(seq, "VMEMMAP_SIZE:0x%llx \n", VMEMMAP_SIZE); 
+	seq_printf(seq, "VMEMMAP_END:0x%llx \n", VMEMMAP_END); 	
 	return 0;
 }
 
@@ -33,7 +38,7 @@ ssize_t	rockllee_proc_write(struct file *file, const char *buffer, size_t len, l
 
 	p = kmalloc(num, GFP_KERNEL);
 	if (p == NULL) {
-		printk("kmalloc fale p=0x%p   num=0x%x!!! \n", p, num);
+		printk("kmalloc fail.... p=0x%p   num=0x%x!!! \n", p, num);
 	} else {
 		printk("kmalloc ok   p=0x%p   num=0x%x!!! \n", p, num);
 	}
