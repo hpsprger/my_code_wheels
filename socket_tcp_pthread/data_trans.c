@@ -97,7 +97,7 @@ void * sync_fsm_translation()
 		case SYNC_LINK_START_TX:
 		ret = data_trans_send_single_msg(SYNC_MSG_START);
 		if (ret < 0) {
-			ERROR_PRRINT("SYNC_LINK_START_TX =========1======= no pass send fail\n");
+			ERROR_PRRINT("SYNC_LINK_START_TX =========1======= no pass send fail err_count=%d \n", err_count);
 			err_count++;
 			break;
 		} else {
@@ -111,7 +111,7 @@ void * sync_fsm_translation()
 		msg.payload = rx_buffer;
 		ret = data_trans_recv_single_msg(&msg, RX_TIMEOUT);
 		if (ret < 0) {
-			ERROR_PRRINT("SYNC_LINK_START_RX =========2======= nopass recv fail\n");
+			ERROR_PRRINT("SYNC_LINK_START_RX =========2======= nopass recv fail err_count=%d \n", err_count);
 			err_count++;
 			break;
 		}
@@ -121,7 +121,7 @@ void * sync_fsm_translation()
 			link_fsm = SYNC_LINK_HIGH_TX;
 			err_count = 0;
 		} else {
-			ERROR_PRRINT("SYNC_LINK_START_RX =========2======= nopass type mismatching \n");
+			ERROR_PRRINT("SYNC_LINK_START_RX =========2======= nopass type mismatching err_count=%d \n", err_count);
 			err_count++;
 		}
 		break;
@@ -129,7 +129,7 @@ void * sync_fsm_translation()
 		case SYNC_LINK_HIGH_TX:
 		ret = data_trans_send_single_msg(SYNC_MSG_HIGH);
 		if (ret < 0) {
-			ERROR_PRRINT("SYNC_LINK_HIGH_TX =========3======= nopass send fail\n");
+			ERROR_PRRINT("SYNC_LINK_HIGH_TX =========3======= nopass send fail err_count=%d \n", err_count);
 			err_count++;
 			break;
 		} else {
@@ -143,7 +143,7 @@ void * sync_fsm_translation()
 		msg.payload = rx_buffer;
 		ret = data_trans_recv_single_msg(&msg, RX_TIMEOUT);
 		if (ret < 0) {
-			ERROR_PRRINT("SYNC_LINK_HIGH_RX =========4======= nopass recv fail\n");
+			ERROR_PRRINT("SYNC_LINK_HIGH_RX =========4======= nopass recv fail err_count=%d \n", err_count);
 			err_count++;
 			break;
 		}
@@ -153,7 +153,7 @@ void * sync_fsm_translation()
 			link_fsm = SYNC_LINK_LOW_TX;
 			err_count = 0;
 		} else {
-			ERROR_PRRINT("SYNC_LINK_HIGH_RX =========4======= nopass type mismatching \n");
+			ERROR_PRRINT("SYNC_LINK_HIGH_RX =========4======= nopass type mismatching err_count=%d \n", err_count);
 			err_count++;
 		}
 		break;
@@ -162,7 +162,7 @@ void * sync_fsm_translation()
 		case SYNC_LINK_LOW_TX:
 		ret = data_trans_send_single_msg(SYNC_MSG_LOW);
 		if (ret < 0) {
-			ERROR_PRRINT("SYNC_LINK_LOW_TX =========5======= nopass send fail\n");
+			ERROR_PRRINT("SYNC_LINK_LOW_TX =========5======= nopass send fail err_count=%d\n", err_count);
 			err_count++;
 			break;
 		} else {
@@ -176,7 +176,7 @@ void * sync_fsm_translation()
 		msg.payload = rx_buffer;
 		ret = data_trans_recv_single_msg(&msg, RX_TIMEOUT);
 		if (ret < 0) {
-			ERROR_PRRINT("SYNC_LINK_LOW_RX =========6======= nopass recv fail\n");
+			ERROR_PRRINT("SYNC_LINK_LOW_RX =========6======= nopass recv fail err_count=%d \n", err_count);
 			err_count++;
 			break;
 		}
@@ -186,7 +186,7 @@ void * sync_fsm_translation()
 			link_fsm = SYNC_LINK_TASKING;
 			err_count = 0;
 		} else {
-			ERROR_PRRINT("SYNC_LINK_LOW_RX =========6======= nopass type mismatching \n");
+			ERROR_PRRINT("SYNC_LINK_LOW_RX =========6======= nopass type mismatching err_count=%d \n", err_count);
 			err_count++;
 		}
 		break;
