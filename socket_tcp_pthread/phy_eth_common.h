@@ -17,7 +17,7 @@
 
 #define SERVER_LISTEN_MAX 6000
 
-#define ERROR_MAX_CNT 40
+#define ERROR_MAX_CNT 100
 #define RX_TIMEOUT 1000
 #define LINK_FSM_USLEEP 100
 
