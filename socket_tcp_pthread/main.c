@@ -26,7 +26,7 @@ void main(int argc, char* argv[])
     printf("main --> argv[0]=%s  argv[1]=%d  argc=%d \n", argv[0], atoi(argv[1]), argc);
 
 	memset(server_ip, 0, sizeof(server_ip));
-	if (argc >= 2) {
+	if (argc >= 3) {
 		memcpy(server_ip, argv[2], strlen(argv[2])+1);
 		printf("server addr:%s \n", server_ip);
 	}
