@@ -221,7 +221,7 @@ void * sync_fsm_translation()
 			ERROR_PRRINT("SYNC_LINK_TASKING =====7===delay:%dus===task_count=%d==milliseconds:%lld=====count_per_second=%lld=== \n", delay, task_count, milliseconds, count_per_second);
 			sleep(5); //观察用
 		}
-		task_count++
+		task_count++;
 		break;
 
 		case SYNC_LINK_STOP:
