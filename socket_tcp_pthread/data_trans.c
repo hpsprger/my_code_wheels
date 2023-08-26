@@ -231,6 +231,11 @@ void * sync_fsm_translation()
 			data_trans.excep_info.last_fsm_result = ret;
 			data_trans.excep_info.task_count = task_count;
 			clock_gettime(0, &data_trans.excep_info.time);
+			ERROR_PRRINT("err_count:%d ================ \n", err_count);
+			ERROR_PRRINT("excep_info.link_status:%d ================ \n", link_status);
+			ERROR_PRRINT("excep_info.last_fsm:%d ================ \n", link_fsm);
+			ERROR_PRRINT("excep_info.last_fsm_result:%d ================ \n", ret);
+			ERROR_PRRINT("excep_info.task_count:%lld ================ \n", task_count);
 			link_fsm = SYNC_LINK_STOP;
 		}
 		usleep(LINK_FSM_USLEEP);
