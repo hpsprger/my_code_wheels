@@ -49,6 +49,8 @@ int client_get_socket_info(unsigned int type, void *info)
 	return 0;
 }
 
+extern char *server_ip;
+
 void *client_entry()
 {
     struct sockaddr_in serv_addr;
