@@ -119,7 +119,7 @@ void * sync_fsm_translation()
 			link_fsm = SYNC_LINK_HIGH_TX;
 			err_count = 0;
 		} else {
-			ERROR_PRRINT("SYNC_LINK_START_RX =========2======= nopass tyoe mis \n");
+			ERROR_PRRINT("SYNC_LINK_START_RX =========2======= nopass type mismatching \n");
 			err_count++;
 		}
 		break;
@@ -151,7 +151,7 @@ void * sync_fsm_translation()
 			link_fsm = SYNC_LINK_LOW_TX;
 			err_count = 0;
 		} else {
-			ERROR_PRRINT("SYNC_LINK_HIGH_RX =========4======= nopass tyoe mis\n");
+			ERROR_PRRINT("SYNC_LINK_HIGH_RX =========4======= nopass type mismatching \n");
 			err_count++;
 		}
 		break;
@@ -184,7 +184,7 @@ void * sync_fsm_translation()
 			link_fsm = SYNC_LINK_TASKING;
 			err_count = 0;
 		} else {
-			ERROR_PRRINT("SYNC_LINK_LOW_RX =========6======= nopass tyoe mis\n");
+			ERROR_PRRINT("SYNC_LINK_LOW_RX =========6======= nopass type mismatching \n");
 			err_count++;
 		}
 		break;
