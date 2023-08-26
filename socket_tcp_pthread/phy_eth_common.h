@@ -17,8 +17,9 @@
 
 #define SERVER_LISTEN_MAX 6000
 
-#define RX_TIMEOUT 100000
-#define LINK_FSM_USLEEP 1000
+#define ERROR_MAX_CNT 10
+#define RX_TIMEOUT 50000
+#define LINK_FSM_USLEEP 500
 
 typedef struct _msg_head {
 	unsigned short type;

@@ -233,7 +233,7 @@ void * sync_fsm_translation()
 		default:
 		break;
 		}
-		if (err_count > 5) {
+		if (err_count > ERROR_MAX_CNT) {
 			get_link_info(&link_status);
 			data_trans.excep_info.link_status = link_status;
 			data_trans.excep_info.last_fsm = link_fsm;
