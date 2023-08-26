@@ -237,6 +237,7 @@ void * sync_fsm_translation()
 			ERROR_PRRINT("excep_info.last_fsm_result:%d ================ \n", ret);
 			ERROR_PRRINT("excep_info.task_count:%lld ================ \n", task_count);
 			link_fsm = SYNC_LINK_STOP;
+			err_count = 0;
 		}
 		usleep(LINK_FSM_USLEEP);
 	}
