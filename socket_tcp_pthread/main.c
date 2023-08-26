@@ -5,6 +5,8 @@
 char send_text[PAYLOAD_MAX_LEN];
 char rcv_text[PAYLOAD_MAX_LEN];
 
+char server_ip[PAYLOAD_MAX_LEN];
+
 // ./main 0 ==> server
 // ./main 1 ==> client
 void main(int argc, char* argv[])
@@ -17,11 +19,17 @@ void main(int argc, char* argv[])
 
     if(argc < 2)
     {
-        printf("usage: ./main 1 \n");
+        printf("usage: ./main 1 192.168.8.2\n");
         exit(1);
     }
 
     printf("main --> argv[0]=%s  argv[1]=%d  argc=%d \n", argv[0], atoi(argv[1]), argc);
+
+	memset(server_ip, 0, sizeof(server_ip));
+	if (argc >= 2) {
+		memcpy(server_ip, argv[2], strlen(argv[2]));
+		printf("server addr:%s \n", server_ip);
+	}
 
 	data_trans_init(atoi(argv[1]));
 
