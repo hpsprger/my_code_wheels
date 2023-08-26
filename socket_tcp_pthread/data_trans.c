@@ -248,7 +248,7 @@ void * sync_fsm_translation()
 			link_fsm = SYNC_LINK_STOP;
 			err_count = 0;
 		}
-		usleep(LINK_FSM_USLEEP);
+		//usleep(LINK_FSM_USLEEP);
 	}
 
 }

@@ -18,7 +18,7 @@
 #define SERVER_LISTEN_MAX 6000
 
 #define ERROR_MAX_CNT 40
-#define RX_TIMEOUT 5000
+#define RX_TIMEOUT 1000
 #define LINK_FSM_USLEEP 100
 
 typedef struct _msg_head {
