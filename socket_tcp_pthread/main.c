@@ -27,7 +27,7 @@ void main(int argc, char* argv[])
 
 	memset(server_ip, 0, sizeof(server_ip));
 	if (argc >= 2) {
-		memcpy(server_ip, argv[2], strlen(argv[2]));
+		memcpy(server_ip, argv[2], strlen(argv[2])+1);
 		printf("server addr:%s \n", server_ip);
 	}
 
