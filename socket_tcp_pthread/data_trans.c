@@ -202,7 +202,7 @@ void * sync_fsm_translation()
 #endif 
 		(void)clock_gettime(CLOCK_REALTIME, &ts);
 		milliseconds = (ts.tv_sec*1000) + (ts.tv_nsec/1000000);
-		NORMAL_PRINTF("SYNC_LINK_TASKING =====7===delay:%dus===task_count=%d==milliseconds:%lld===== \n", delay, task_count++, milliseconds);
+		NORMAL_PRINTF("SYNC_LINK_TASKING =====7===delay:%dus===task_count=%d==milliseconds:%lld===== \n", delay, task_count, milliseconds);
 		usleep(delay);
 		NORMAL_PRINTF("SYNC_LINK_TASKING ========7==done======= \n");
 
