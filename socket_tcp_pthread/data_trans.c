@@ -75,7 +75,9 @@ void * sync_fsm_translation()
 		.tv_sec = 0,  /* 秒*/
 		.tv_nsec = 0, /* 纳秒*/
 	};
-	long long milliseconds;
+	long long milliseconds = 0;
+	long long last_milliseconds = 0;
+	long long count_per_second = 0;
 	unsigned long long int sec,usec = 0;
 
 	NORMAL_PRINTF(" =========fsm_translation======= \n");
@@ -210,10 +212,16 @@ void * sync_fsm_translation()
 		if (task_count % 5000 == 0) {
 			(void)clock_gettime(CLOCK_REALTIME, &ts);
 			milliseconds = (ts.tv_sec*1000) + (ts.tv_nsec/1000000);
-			ERROR_PRRINT("SYNC_LINK_TASKING =====7===delay:%dus===task_count=%d==milliseconds:%lld===== \n", delay, task_count++, milliseconds);
+			if (last_milliseconds == 0) {
+				last_milliseconds = milliseconds;
+				count_per_second = 0;
+			} else {
+				count_per_second = ((float)5000 / (float)(milliseconds - last_milliseconds - 5000)) * (float)1000.0;
+			}
+			ERROR_PRRINT("SYNC_LINK_TASKING =====7===delay:%dus===task_count=%d==milliseconds:%lld=====count_per_second=%lld=== \n", delay, task_count, milliseconds, count_per_second);
 			sleep(5); //观察用
 		}
-
+		task_count++
 		break;
 
 		case SYNC_LINK_STOP:
