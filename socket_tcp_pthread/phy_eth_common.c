@@ -227,7 +227,7 @@ int recv_single_message(int sockfd, link_msg *pmsg, unsigned int timeout)
 	msg.msg_controllen = 0;
 	ret = recvmsg(sockfd, &msg, flag);
 	if(ret < 0) {
-		perror("recv error.\n");
+		//perror("recv error.\n");
 		return -1;
 	}
 
@@ -239,7 +239,7 @@ int recv_single_message(int sockfd, link_msg *pmsg, unsigned int timeout)
 	msg.msg_controllen = 0;
 	ret = recvmsg(sockfd, &msg, flag);
 	if(ret < 0) {
-		perror("recv error.\n");
+		//perror("recv error.\n");
 		return -1;
 	}
 
