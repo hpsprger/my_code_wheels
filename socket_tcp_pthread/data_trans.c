@@ -121,6 +121,7 @@ void * sync_fsm_translation()
 		if (ret < 0) {
 			ERROR_PRRINT("SYNC_LINK_START_RX =========2======= nopass recv fail err_count=%d \n", err_count);
 			err_count++;
+			usleep(RX_TIMEOUT);
 			break;
 		}
 
@@ -153,6 +154,7 @@ void * sync_fsm_translation()
 		if (ret < 0) {
 			ERROR_PRRINT("SYNC_LINK_HIGH_RX =========4======= nopass recv fail err_count=%d \n", err_count);
 			err_count++;
+			usleep(RX_TIMEOUT);
 			break;
 		}
 
@@ -186,6 +188,7 @@ void * sync_fsm_translation()
 		if (ret < 0) {
 			ERROR_PRRINT("SYNC_LINK_LOW_RX =========6======= nopass recv fail err_count=%d \n", err_count);
 			err_count++;
+			usleep(RX_TIMEOUT);
 			break;
 		}
 
