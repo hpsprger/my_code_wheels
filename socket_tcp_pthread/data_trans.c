@@ -1,11 +1,8 @@
 #include "data_trans.h"
 
-extern device_ops eth_server_dev_ops;
-extern device_ops eth_client_dev_ops;
-
 device_ops *data_trans_dev_ops[] = {
-	&eth_server_dev_ops,
-	&eth_client_dev_ops,
+	&socket_dev.ops,
+	&socket_dev.ops,
 	//
 };
 
@@ -294,7 +291,7 @@ int data_trans_init(unsigned int type)
 
 	data_trans.ops  = data_trans_dev_ops[type];
 
-	ret = data_trans.ops->init();
+	ret = data_trans.ops->init(type);
 	if(ret < 0)
 	{
 		perror("init failed.\n");

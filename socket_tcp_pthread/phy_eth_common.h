@@ -21,6 +21,19 @@
 #define RX_TIMEOUT 1000
 #define LINK_FSM_USLEEP 100
 
+#define MSG_FIFO_MAX  8192
+
+#define MSG_FIFO_LEN  512
+
+typedef struct _link_msg_fifo {
+	unsigned int wr;
+	unsigned int rd;
+	unsigned int flag;
+	size_t depth; /* free space */
+	size_t depth_max;
+	char *buffer;
+} link_msg_fifo;
+
 typedef struct _msg_head {
 	unsigned short type;
 	unsigned short len;
@@ -31,20 +44,22 @@ typedef struct _link_msg {
 	unsigned char  *payload;
 } link_msg;
 
-typedef struct _socket_device {
-	int listen_fd;
-	int conn_fd;
-	int link_status;
-} socket_device;
-
 typedef struct _device_ops {
-	int (*init)(void);
+	int (*init)(unsigned int type);
 	int  (*send)(link_msg *pmsg);
 	int  (*recv)(link_msg *pmsg, unsigned int timeout);
 	int  (*get)(unsigned int type, void *info);
 	int  (*set)(unsigned int type, void *info);
 	int  (*close)(void);
 } device_ops;
+
+typedef struct _socket_device {
+	int listen_fd;
+	int conn_fd;
+	int link_status;
+	device_ops ops;
+	link_msg_fifo *fifo;
+} socket_device;
 
 #define GET_ENTRY(ptr, type, member) \
     ((type *)( (char *)(ptr) - (unsigned long)(&((type*)0)->member)))
@@ -83,5 +98,13 @@ enum LINK_INFO {
 	SYNC_LINK_INFO_STATUS= 0,
 	SYNC_LINK_INFO_MAX,
 };
+
+enum DEVICE_TYPE {
+	DEVICE_TYPE_TCP_SERVER = 0,
+	DEVICE_TYPE_TCP_CLIENT,
+	DEVICE_TYPE_MAX,
+};
+
+extern socket_device socket_dev;
 
 #endif

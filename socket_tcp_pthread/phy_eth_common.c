@@ -1,41 +1,31 @@
 #include "phy_eth_common.h"
 
-#define MSG_FIFO_MAX  8192
-
-typedef struct _link_msg_fifo {
-	unsigned int wr;
-	unsigned int rd;
-	unsigned int flag;
-	size_t depth; /* free space */
-	size_t depth_max;
-	char *buffer;
-} link_msg_fifo;
-
-link_msg_fifo *msg_fifo;
-
 int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 {
 	unsigned int msg_total_len;
 	unsigned int cur_len;
 
 	if (pfifo == NULL || pmsg == NULL) {
+		printf("push_msg_fifo pointer null\n");
 		return -1;
 	}
 
 	if (pmsg->payload == NULL) {
+		printf("push_msg_fifo payload null\n");
 		return -1;
 	}
 
-	msg_total_len = sizeof(pmsg->head) + pmsg->head->len;
+	msg_total_len = sizeof(pmsg->head) + pmsg->head.len;
 
 	if (pfifo->depth < msg_total_len) {
+		printf("push_msg_fifo  free space not enough \n");
 		return -1; /* free space not enough */
 	}
 
 	/* aroud or fist time is equal*/
 	if (pfifo->wr <= pfifo->rd) {
 		memcpy(pfifo->buffer[pfifo->wr], &pmsg->head, sizeof(pmsg->head));
-		memcpy(pfifo->buffer[pfifo->wr + sizeof(pmsg->head)], pmsg->payload, pmsg->head->len);
+		memcpy(pfifo->buffer[pfifo->wr + sizeof(pmsg->head)], pmsg->payload, pmsg->head.len);
 		pfifo->wr += msg_total_len;
 		pfifo->depth -= msg_total_len;
 	} else {
@@ -44,7 +34,7 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		if (cur_len < sizeof(pmsg->head)) {
 			memcpy(pfifo->buffer[pfifo->wr], &pmsg->head, cur_len);
 			pfifo->wr = 0;
-			memcpy(pfifo->buffer[pfifo->wr], &((char *)&pmsg->head) + cur_len), sizeof(pmsg->head) - cur_len);
+			memcpy(pfifo->buffer[pfifo->wr], ((char *)&pmsg->head) + cur_len, sizeof(pmsg->head) - cur_len);
 			pfifo->wr += sizeof(pmsg->head) - cur_len;
 		} else if (cur_len == sizeof(pmsg->head)) {
 			memcpy(pfifo->buffer[pfifo->wr], &pmsg->head, sizeof(pmsg->head));
@@ -78,14 +68,17 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 	unsigned int cur_len;
 
 	if (pfifo == NULL || pmsg == NULL) {
+		printf("get_msg_fifo  pointer null \n");
 		return -1;
 	}
 
 	if (pmsg->payload == NULL) {
+		printf("get_msg_fifo  payload null \n");
 		return -1;
 	}
 
 	if (pfifo->depth == pfifo->depth_max) {
+		printf("get_msg_fifo  empty \n");
 		return -1; /* fifo empty */
 	}
 
@@ -160,6 +153,7 @@ void destroy_msg_fifo(link_msg_fifo *pfifo)
 	free(pfifo->buffer);
 	free(pfifo);
 }
+
 
 int send_single_message(int sockfd, link_msg *pmsg)
 {
@@ -252,3 +246,125 @@ int recv_single_message(int sockfd, link_msg *pmsg, unsigned int timeout)
 
 	return 0;
 }
+
+int link_send_single_message(link_msg *pmsg)
+{
+	int ret;
+	ret = send_single_message(socket_dev.conn_fd, pmsg);
+	return ret;
+}
+
+int link_recv_single_message(link_msg *pmsg, unsigned int timeout)
+{
+	int ret;
+	//ret = recv_single_message(socket_dev.conn_fd, pmsg, timeout);
+	ret = get_msg_fifo(socket_dev.fifo, pmsg);
+	return ret;
+}
+
+void link_close(void)
+{
+	close(socket_dev.conn_fd);
+	if (socket_dev.listen_fd != 0) {
+		close(socket_dev.listen_fd);	
+	}
+}
+
+int link_get_info(unsigned int type, void *info)
+{
+	if (info == NULL) {
+		return -1;
+	}
+
+	if (type == SYNC_LINK_INFO_STATUS) {
+		return 	*((unsigned int *)info) = socket_dev.link_status;
+	}
+
+	return 0;
+}
+
+
+void *socket_recv_task()
+{
+	link_msg msg = {0};
+ 	int ret;
+	unsigned int link_status = SYNC_LINK_DISCONNECTED;
+
+	while (1) {
+		link_get_info(SYNC_LINK_INFO_STATUS, &link_status);
+		if (link_status == SYNC_LINK_DISCONNECTED) {
+			usleep(500);
+			continue;
+		}
+		ret = link_recv_single_message(&msg, 500);
+		if (ret < 0) {
+			continue;
+		}
+		ret = push_msg_fifo(socket_dev.fifo, &msg);
+		if (ret < 0) {
+			printf("push_msg_fifo failed ret:%d \n", ret);
+		}
+		usleep(500);
+	}
+}
+
+int socket_init(unsigned int type);
+void *client_entry();
+void *server_entry();
+
+socket_device socket_dev = {
+	.listen_fd = 0,
+	.conn_fd = 0,
+	.link_status = SYNC_LINK_DISCONNECTED,
+	.ops = {
+		.init = socket_init,
+		.send = link_send_single_message,
+		.recv = link_recv_single_message,
+		.get = link_get_info,
+		.set = NULL,
+		.close = link_close,
+	},
+	.fifo = 0,
+};
+
+int socket_init(unsigned int type)
+{
+	pthread_t tid;
+
+	printf("socket_init...\n");
+
+	socket_dev.link_status = SYNC_LINK_DISCONNECTED;
+
+	socket_dev.fifo = create_msg_fifo(MSG_FIFO_LEN);
+	if (socket_dev.fifo == NULL) {
+		perror("create_msg_fifo error.\n");
+		return -1;
+	}
+
+	if(pthread_create(&tid , NULL , socket_recv_task, 0) == -1)
+	{
+		perror("socket_recv_task pthread create error.\n");
+		return -1;
+	}
+
+	if (type == DEVICE_TYPE_TCP_SERVER) {
+		printf("server_init...\n");
+		if(pthread_create(&tid , NULL , server_entry, 0) == -1)
+		{
+			perror("server_entry pthread create error.\n");
+			return -1;
+		}
+	} else if (type == DEVICE_TYPE_TCP_CLIENT) {
+		printf("client_init...\n");
+		if(pthread_create(&tid , NULL , client_entry, 0) == -1)
+		{
+			perror("client_entry pthread create error.\n");
+			return -1;
+		}
+	} else {
+		perror(" socket_init error.\n");
+		return -1;
+	}
+	return 0;
+}
+

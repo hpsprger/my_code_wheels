@@ -7,12 +7,6 @@
 #define NORMAL_PRINTF  //printf
 #define ERROR_PRRINT   printf
 
-enum DEVICE_TYPE {
-	DEVICE_TYPE_TCP_SERVER = 0,
-	DEVICE_TYPE_TCP_CLIENT,
-	DEVICE_TYPE_MAX,
-};
-
 typedef struct _snapshot_info {
 	unsigned int last_fsm;
 	unsigned int last_fsm_result;
