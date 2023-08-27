@@ -34,6 +34,7 @@ void main(int argc, char* argv[])
 	data_trans_init(atoi(argv[1]));
 
 	while (1) {
+# if 0
 		printf("pls choose: 1.send 2.recv 3.exit \n");
 		memset(choose , 0 , CHOOSE_MAX_LINE);
 		if ((fgets(choose , CHOOSE_MAX_LINE , stdin)) != NULL) {
@@ -68,6 +69,8 @@ void main(int argc, char* argv[])
 				exit(1);
 			}
 		}
+#endif
+		sleep(1);
 	}
 	return 0;
 }
