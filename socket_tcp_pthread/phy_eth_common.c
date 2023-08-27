@@ -16,6 +16,8 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		printf("push_msg_fifo payload null\n");
 		return -1;
 	}
+	
+	pthread_mutex_lock(&pfifo->mutex);
 
 	msg_total_len = sizeof(pmsg->head) + pmsg->head.len;
 
@@ -23,7 +25,6 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		printf("push_msg_fifo  free space not enough \n");
 		return -1; /* free space not enough */
 	}
-	pthread_mutex_lock(&pfifo->mutex);
 	/* aroud or fist time is equal*/
 	if (pfifo->wr <= pfifo->rd) {
 		memcpy(&(pfifo->buffer[pfifo->wr]), &pmsg->head, sizeof(pmsg->head));
@@ -66,7 +67,7 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 	pthread_mutex_unlock(&pfifo->mutex);
 	return 0;
 }
-// 断点调试   watch socket_dev.fifo->depth if socket_dev.fifo->depth > 512 
+// 断点调试   watch socket_dev.fifo->depth if socket_dev.fifo->depth > 128 
 // 断点调试   watch socket_dev.fifo->depth   p *socket_dev.fifo
 int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 {
@@ -83,11 +84,12 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		return -1;
 	}
 
+	pthread_mutex_lock(&pfifo->mutex);
+
 	if (pfifo->depth == pfifo->depth_max) {
 		//printf("get_msg_fifo  empty \n");
 		return -1; /* fifo empty */
 	}
-	pthread_mutex_lock(&pfifo->mutex);
 	/* not aroud or fist time is equal*/
 	if (pfifo->rd <= pfifo->wr) {
 		memcpy(&pmsg->head, &(pfifo->buffer[pfifo->rd]), sizeof(pmsg->head));
