@@ -186,7 +186,7 @@ void * sync_fsm_translation()
 		msg.payload = rx_buffer;
 		ret = data_trans_recv_single_msg(&msg, RX_TIMEOUT);
 		if (ret < 0) {
-			ERROR_PRRINT("SYNC_LINK_LOW_RX =========6======= nopass recv fail err_count=%d \n", err_count);
+			//ERROR_PRRINT("SYNC_LINK_LOW_RX =========6======= nopass recv fail err_count=%d \n", err_count);
 			err_count++;
 			usleep(RX_TIMEOUT);
 			break;

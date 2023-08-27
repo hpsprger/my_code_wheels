@@ -79,7 +79,7 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 	}
 
 	if (pfifo->depth == pfifo->depth_max) {
-		printf("get_msg_fifo  empty \n");
+		//printf("get_msg_fifo  empty \n");
 		return -1; /* fifo empty */
 	}
 	pthread_mutex_lock(&pfifo->mutex);
