@@ -1,5 +1,7 @@
 #include "phy_eth_common.h"
 
+// p *socket_dev.fifo
+// x /32x socket_dev.fifo->buffer
 int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 {
 	unsigned int msg_total_len;
@@ -64,7 +66,8 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 	pthread_mutex_unlock(&pfifo->mutex);
 	return 0;
 }
-
+// 断点调试   watch socket_dev.fifo->depth if socket_dev.fifo->depth > 512 
+// 断点调试   watch socket_dev.fifo->depth 
 int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 {
 	msg_head head = {0};

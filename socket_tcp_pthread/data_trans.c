@@ -54,6 +54,8 @@ int data_trans_recv_single_msg(link_msg *pmsg, unsigned int timeout)
 	return ret;
 }
 
+unsigned int task_count;
+
 void * sync_fsm_translation()
 {
 	int ret;
@@ -71,7 +73,7 @@ void * sync_fsm_translation()
 	link_msg msg = {0};
 	unsigned int link_fsm = SYNC_LINK_SETUP;
 	unsigned int link_status = SYNC_LINK_DISCONNECTED;
-	unsigned int task_count;
+
 	unsigned char rx_buffer[PAYLOAD_MAX_LEN];
 	struct timeval time = { 
 			.tv_sec=0, /*单位：s*/
