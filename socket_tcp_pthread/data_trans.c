@@ -258,16 +258,16 @@ void * sync_fsm_translation()
 
 		if (err_count > ERROR_MAX_CNT) {
 			get_link_info(&link_status);
-			data_trans.excep_info.link_status = link_status;
-			data_trans.excep_info.last_fsm = link_fsm;
-			data_trans.excep_info.last_fsm_result = ret;
-			data_trans.excep_info.task_count = task_count;
-			clock_gettime(0, &data_trans.excep_info.time);
+			data_trans.snapshot.link_status = link_status;
+			data_trans.snapshot.last_fsm = link_fsm;
+			data_trans.snapshot.last_fsm_result = ret;
+			data_trans.snapshot.task_count = task_count;
+			clock_gettime(0, &data_trans.snapshot.time);
 			ERROR_PRRINT("err_count:%d ================ \n", err_count);
-			ERROR_PRRINT("excep_info.link_status:%d ================ \n", link_status);
-			ERROR_PRRINT("excep_info.last_fsm:%d ================ \n", link_fsm);
-			ERROR_PRRINT("excep_info.last_fsm_result:%d ================ \n", ret);
-			ERROR_PRRINT("excep_info.task_count:%lld ================ \n", task_count);
+			ERROR_PRRINT("snapshot.link_status:%d ================ \n", link_status);
+			ERROR_PRRINT("snapshot.last_fsm:%d ================ \n", link_fsm);
+			ERROR_PRRINT("snapshot.last_fsm_result:%d ================ \n", ret);
+			ERROR_PRRINT("snapshot.task_count:%lld ================ \n", task_count);
 			link_fsm = SYNC_LINK_STOP;
 			err_count = 0;
 		}

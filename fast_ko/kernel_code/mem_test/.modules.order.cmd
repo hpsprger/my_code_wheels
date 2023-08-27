@@ -1,0 +1,1 @@
+cmd_/home/hpsp/rock_space/my_code_wheels/my_code_wheels/fast_ko/kernel_code/mem_test/modules.order := {   echo /home/hpsp/rock_space/my_code_wheels/my_code_wheels/fast_ko/kernel_code/mem_test/mem_test.ko; :; } | awk '!x[$$0]++' - > /home/hpsp/rock_space/my_code_wheels/my_code_wheels/fast_ko/kernel_code/mem_test/modules.order

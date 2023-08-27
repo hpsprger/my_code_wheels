@@ -17,6 +17,7 @@
 #include <linux/kallsyms.h>
 #include <linux/kprobes.h>
 #include <linux/console.h>
+#include <linux/serial_core.h>
 
 #if 0
 //测试命令
