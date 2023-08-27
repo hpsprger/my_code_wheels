@@ -23,6 +23,7 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 
 	if (pfifo->depth < msg_total_len) {
 		printf("push_msg_fifo  free space not enough \n");
+		pthread_mutex_unlock(&pfifo->mutex);
 		return -1; /* free space not enough */
 	}
 	/* aroud or fist time is equal*/
@@ -64,6 +65,7 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		pfifo->depth -= msg_total_len;
 		pfifo->wr %= pfifo->depth_max;
 	}
+
 	pthread_mutex_unlock(&pfifo->mutex);
 	return 0;
 }
@@ -88,6 +90,7 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 
 	if (pfifo->depth == pfifo->depth_max) {
 		//printf("get_msg_fifo  empty \n");
+		pthread_mutex_unlock(&pfifo->mutex);
 		return -1; /* fifo empty */
 	}
 	/* not aroud or fist time is equal*/
@@ -129,6 +132,7 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		pfifo->depth += sizeof(pmsg->head) + pmsg->head.len;
 		pfifo->rd %= pfifo->depth_max;
 	}
+
 	pthread_mutex_unlock(&pfifo->mutex);
 	return 0;
 }
