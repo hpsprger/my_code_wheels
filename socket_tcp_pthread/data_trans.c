@@ -61,7 +61,9 @@ void * sync_fsm_translation()
 {
 	int ret;
 	unsigned int delay;
-	int err_count;
+	int err_count = 0;
+	int err_count_max = 0x0;
+	int err_count_min = 0xffffffff;
 	link_msg msg = {0};
 	unsigned int link_fsm = SYNC_LINK_SETUP;
 	unsigned int link_status = SYNC_LINK_DISCONNECTED;
@@ -233,6 +235,7 @@ void * sync_fsm_translation()
 		default:
 		break;
 		}
+
 		if (err_count > ERROR_MAX_CNT) {
 			get_link_info(&link_status);
 			data_trans.excep_info.link_status = link_status;
@@ -248,6 +251,14 @@ void * sync_fsm_translation()
 			link_fsm = SYNC_LINK_STOP;
 			err_count = 0;
 		}
+
+		if (err_count > err_count_max) {
+			err_count_max = err_count;
+		}
+		if (err_count < err_count_min) {
+			err_count_min = err_count;
+		}
+
 		//usleep(LINK_FSM_USLEEP);
 	}
 
