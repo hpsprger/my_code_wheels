@@ -221,7 +221,7 @@ void * sync_fsm_translation()
 				count_per_second = ((float)5000 / (float)(milliseconds - last_milliseconds - 5000)) * (float)1000.0;
 				last_milliseconds = milliseconds;
 			}
-			ERROR_PRRINT("SYNC_LINK_TASKING =====7===delay:%dus===task_count=%d==milliseconds:%lld=====count_per_second=%lld=== \n", delay, task_count, milliseconds, count_per_second);
+			ERROR_PRRINT("SYNC_LINK_TASKING =====7===delay:%dus===task_count=%d==milliseconds:%lld=====count_per_second=%lld====err_count_max=%d===err_count_min=%d===\n", delay, task_count, milliseconds, count_per_second,err_count_max,err_count_min);
 			sleep(5); //观察用
 		}
 		task_count++;
