@@ -125,7 +125,7 @@ void * sync_fsm_translation()
 			NORMAL_PRINTF("SYNC_LINK_START_RX =========2======= pass \n");
 
 			rx_fsm_change_count++;
-			rx_err_count_sum += err_count;
+			rx_err_count_sum += err_count + 1;
 			rx_err_count_avg = rx_err_count_sum / rx_fsm_change_count;
 
 			link_fsm = SYNC_LINK_HIGH_TX;
@@ -162,7 +162,7 @@ void * sync_fsm_translation()
 			NORMAL_PRINTF("SYNC_LINK_HIGH_RX =========4======= pass \n");
 
 			rx_fsm_change_count++;
-			rx_err_count_sum += err_count;
+			rx_err_count_sum += err_count + 1;
 			rx_err_count_avg = rx_err_count_sum / rx_fsm_change_count;
 
 			link_fsm = SYNC_LINK_LOW_TX;
@@ -200,7 +200,7 @@ void * sync_fsm_translation()
 			NORMAL_PRINTF("SYNC_LINK_LOW_RX =========6======= pass \n");
 
 			rx_fsm_change_count++;
-			rx_err_count_sum += err_count;
+			rx_err_count_sum += err_count + 1;
 			rx_err_count_avg = rx_err_count_sum / rx_fsm_change_count;
 
 			link_fsm = SYNC_LINK_TASKING;
