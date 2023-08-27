@@ -61,7 +61,10 @@ void * sync_fsm_translation()
 {
 	int ret;
 	unsigned int delay;
+	unsigned int rx_fsm_change_count = 0;
 	unsigned int err_count = 0;
+	unsigned int rx_err_count_avg = 0;
+	unsigned int rx_err_count_sum = 0;
 	unsigned int err_count_max = 0x0;
 	unsigned int err_count_min = 0xffffffff;
 	link_msg msg = {0};
@@ -120,6 +123,11 @@ void * sync_fsm_translation()
 
 		if (msg.head.type == SYNC_MSG_START) {
 			NORMAL_PRINTF("SYNC_LINK_START_RX =========2======= pass \n");
+
+			rx_fsm_change_count++;
+			rx_err_count_sum += err_count;
+			rx_err_count_avg = rx_err_count_sum / rx_fsm_change_count;
+
 			link_fsm = SYNC_LINK_HIGH_TX;
 			err_count = 0;
 		} else {
@@ -152,6 +160,11 @@ void * sync_fsm_translation()
 
 		if (msg.head.type == SYNC_MSG_HIGH) {
 			NORMAL_PRINTF("SYNC_LINK_HIGH_RX =========4======= pass \n");
+
+			rx_fsm_change_count++;
+			rx_err_count_sum += err_count;
+			rx_err_count_avg = rx_err_count_sum / rx_fsm_change_count;
+
 			link_fsm = SYNC_LINK_LOW_TX;
 			err_count = 0;
 		} else {
@@ -185,6 +198,11 @@ void * sync_fsm_translation()
 
 		if (msg.head.type == SYNC_MSG_LOW) {
 			NORMAL_PRINTF("SYNC_LINK_LOW_RX =========6======= pass \n");
+
+			rx_fsm_change_count++;
+			rx_err_count_sum += err_count;
+			rx_err_count_avg = rx_err_count_sum / rx_fsm_change_count;
+
 			link_fsm = SYNC_LINK_TASKING;
 			err_count = 0;
 		} else {
@@ -221,7 +239,8 @@ void * sync_fsm_translation()
 				count_per_second = ((float)5000 / (float)(milliseconds - last_milliseconds - 5000)) * (float)1000.0;
 				last_milliseconds = milliseconds;
 			}
-			ERROR_PRRINT("SYNC_LINK_TASKING =====7===delay:%dus===task_count=%d==milliseconds:%lld=====count_per_second=%lld====err_count_max=%d===err_count_min=%d===\n", delay, task_count, milliseconds, count_per_second,err_count_max,err_count_min);
+
+			ERROR_PRRINT("SYNC_LINK_TASKING =====7===delay:%dus===task_count=%d==milliseconds:%lld=====count_per_second=%lld====err_count_max=%d===err_count_min=%d===rx_err_count_avg=%d===rx_fsm_change_count=%lld \n", delay, task_count, milliseconds, count_per_second,err_count_max,err_count_min, rx_err_count_avg, rx_fsm_change_count);
 			sleep(5); //观察用
 		}
 		task_count++;
@@ -251,6 +270,7 @@ void * sync_fsm_translation()
 			link_fsm = SYNC_LINK_STOP;
 			err_count = 0;
 		}
+		//usleep(LINK_FSM_USLEEP);
 
 		if (err_count > err_count_max) {
 			err_count_max = err_count;
@@ -258,8 +278,6 @@ void * sync_fsm_translation()
 		if (err_count < err_count_min) {
 			err_count_min = err_count;
 		}
-
-		//usleep(LINK_FSM_USLEEP);
 	}
 
 }
