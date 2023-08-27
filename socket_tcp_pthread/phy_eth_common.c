@@ -24,37 +24,37 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 	pthread_mutex_lock(&pfifo->mutex);
 	/* aroud or fist time is equal*/
 	if (pfifo->wr <= pfifo->rd) {
-		memcpy(pfifo->buffer[pfifo->wr], &pmsg->head, sizeof(pmsg->head));
-		memcpy(pfifo->buffer[pfifo->wr + sizeof(pmsg->head)], pmsg->payload, pmsg->head.len);
+		memcpy(&(pfifo->buffer[pfifo->wr]), &pmsg->head, sizeof(pmsg->head));
+		memcpy(&(pfifo->buffer[pfifo->wr + sizeof(pmsg->head)]), pmsg->payload, pmsg->head.len);
 		pfifo->wr += msg_total_len;
 		pfifo->depth -= msg_total_len;
 	} else {
 		/* step1: copy head */
 		cur_len = pfifo->depth_max - pfifo->wr; /* cur_len: wr to depth_max*/
 		if (cur_len < sizeof(pmsg->head)) {
-			memcpy(pfifo->buffer[pfifo->wr], &pmsg->head, cur_len);
+			memcpy(&(pfifo->buffer[pfifo->wr]), &pmsg->head, cur_len);
 			pfifo->wr = 0;
-			memcpy(pfifo->buffer[pfifo->wr], ((char *)&pmsg->head) + cur_len, sizeof(pmsg->head) - cur_len);
+			memcpy(&(pfifo->buffer[pfifo->wr]), ((char *)&pmsg->head) + cur_len, sizeof(pmsg->head) - cur_len);
 			pfifo->wr += sizeof(pmsg->head) - cur_len;
 		} else if (cur_len == sizeof(pmsg->head)) {
-			memcpy(pfifo->buffer[pfifo->wr], &pmsg->head, sizeof(pmsg->head));
+			memcpy(&(pfifo->buffer[pfifo->wr]), &pmsg->head, sizeof(pmsg->head));
 			pfifo->wr = 0;
 		} else {
-			memcpy(pfifo->buffer[pfifo->wr], &pmsg->head, sizeof(pmsg->head));
+			memcpy(&(pfifo->buffer[pfifo->wr]), &pmsg->head, sizeof(pmsg->head));
 			pfifo->wr += sizeof(pmsg->head);
 		}
 		/* step2: copy payload */
 		cur_len = pfifo->depth_max - pfifo->wr; /* cur_len: wr to depth_max*/
 		if (cur_len < pmsg->head.len) {
-			memcpy(pfifo->buffer[pfifo->wr], pmsg->payload, cur_len);
+			memcpy(&(pfifo->buffer[pfifo->wr]), pmsg->payload, cur_len);
 			pfifo->wr = 0;
-			memcpy(pfifo->buffer[pfifo->wr], pmsg->payload + cur_len, pmsg->head.len - cur_len);
+			memcpy(&(pfifo->buffer[pfifo->wr]), pmsg->payload + cur_len, pmsg->head.len - cur_len);
 			pfifo->wr += pmsg->head.len - cur_len;
 		} else if (cur_len == pmsg->head.len) {
-			memcpy(pfifo->buffer[pfifo->wr], pmsg->payload, pmsg->head.len);
+			memcpy(&(pfifo->buffer[pfifo->wr]), pmsg->payload, pmsg->head.len);
 			pfifo->wr = 0;
 		} else {
-			memcpy(pfifo->buffer[pfifo->wr], pmsg->payload, pmsg->head.len);
+			memcpy(&(pfifo->buffer[pfifo->wr]), pmsg->payload, pmsg->head.len);
 			pfifo->wr += pmsg->head.len;
 		}
 		pfifo->depth -= msg_total_len;
