@@ -99,6 +99,7 @@ void * sync_fsm_translation()
 		if (link_status == SYNC_LINK_CONNECTED) {
 			NORMAL_PRINTF("SYNC_LINK_SETUP =========0======= pass\n");
 			link_fsm = SYNC_LINK_START_TX;
+			one_task_fsm_change_count = 0;
 		} else {
 			NORMAL_PRINTF("SYNC_LINK_SETUP =========0======= nopass SYNC_LINK_DISCONNECTED\n");
 		}
@@ -239,7 +240,7 @@ void * sync_fsm_translation()
 				last_milliseconds = milliseconds;
 			}
 
-			ERROR_PRRINT("SYNC_LINK_TASKING ======dly:%dus===tsk_cnt=%d===ms:%lld===tskcnt_per_sec=%lld===err_cnt_max=%d===err_cnt_min=%d===cur tsk_fsm_cnt=%d tsk_fsm_cnt_min=%d tsk_fsm_cnt_max=%d tsk_fsm_cnt_avg=%2.2f \n", delay, task_count, milliseconds, count_per_second, err_count_max,err_count_min, one_task_fsm_change_count, one_task_fsm_change_count_min, one_task_fsm_change_count_max, one_task_fsm_change_count_avg);
+			ERROR_PRRINT("SYNC_LINK_TASKING ======dly:%dus===tsk_cnt=%d===ms:%lld===tskcnt_per_sec=%lld===err_cnt_max=%d===err_cnt_min=%d===cur tsk_fsm_cnt=%d tsk_fsm_cnt_min=%d tsk_fsm_cnt_max=%d tsk_fsm_cnt_avg=%2.2f \n",  delay, task_count, milliseconds, count_per_second, err_count_max,err_count_min, one_task_fsm_change_count, one_task_fsm_change_count_min, one_task_fsm_change_count_max, one_task_fsm_change_count_avg);
 			sleep(5); //观察用
 		}
 		one_task_fsm_change_count = 0;
