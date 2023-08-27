@@ -26,8 +26,9 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		pthread_mutex_unlock(&pfifo->mutex);
 		return -1; /* free space not enough */
 	}
+	printf("pfifo->wr:%d\n", pfifo->wr);
 	/* aroud or fist time is equal*/
-	if (pfifo->wr <= pfifo->rd) {
+	if (pfifo->wr < pfifo->rd) {
 		memcpy(&(pfifo->buffer[pfifo->wr]), &pmsg->head, sizeof(pmsg->head));
 		printf("000 -- ");
 		for (i = 0; i < sizeof(pmsg->head); i++) {
@@ -114,8 +115,9 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		pthread_mutex_unlock(&pfifo->mutex);
 		return -1; /* fifo empty */
 	}
+	printf("pfifo->rd:%d\n", pfifo->rd);
 	/* not aroud or fist time is equal*/
-	if (pfifo->rd <= pfifo->wr) {
+	if (pfifo->rd < pfifo->wr) {
 		memcpy(&pmsg->head, &(pfifo->buffer[pfifo->rd]), sizeof(pmsg->head));
 		memcpy(pmsg->payload, &(pfifo->buffer[pfifo->rd + sizeof(pmsg->head)]), pmsg->head.len);
 		pfifo->rd += sizeof(pmsg->head) + pmsg->head.len;
@@ -126,7 +128,7 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		cur_len = pfifo->depth_max - pfifo->rd; /* cur_len: rd to depth_max*/
 		if (cur_len < sizeof(pmsg->head)) {
 			memcpy(&pmsg->head, &(pfifo->buffer[pfifo->rd]), cur_len);
-			pfifo->rd = 0;
+			pfifo->rd = 0; 
 			memcpy((((char *)&pmsg->head) + cur_len), &(pfifo->buffer[pfifo->rd]), sizeof(pmsg->head) - cur_len);
 			pfifo->rd += sizeof(pmsg->head) - cur_len;
 		} else if (cur_len == sizeof(pmsg->head)) {
