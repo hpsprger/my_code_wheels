@@ -28,6 +28,7 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		memcpy(&(pfifo->buffer[pfifo->wr + sizeof(pmsg->head)]), pmsg->payload, pmsg->head.len);
 		pfifo->wr += msg_total_len;
 		pfifo->depth -= msg_total_len;
+		pfifo->wr %= pfifo->depth_max;
 	} else {
 		/* step1: copy head */
 		cur_len = pfifo->depth_max - pfifo->wr; /* cur_len: wr to depth_max*/
@@ -58,6 +59,7 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 			pfifo->wr += pmsg->head.len;
 		}
 		pfifo->depth -= msg_total_len;
+		pfifo->wr %= pfifo->depth_max;
 	}
 	pthread_mutex_unlock(&pfifo->mutex);
 	return 0;
@@ -89,6 +91,7 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		memcpy(pmsg->payload, &(pfifo->buffer[pfifo->rd + sizeof(pmsg->head)]), pmsg->head.len);
 		pfifo->rd += sizeof(pmsg->head) + pmsg->head.len;
 		pfifo->depth += sizeof(pmsg->head) + pmsg->head.len;
+		pfifo->rd %= pfifo->depth_max;
 	} else {
 		/* step1: copy head */
 		cur_len = pfifo->depth_max - pfifo->rd; /* cur_len: rd to depth_max*/
@@ -119,6 +122,7 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 			pfifo->rd += pmsg->head.len;
 		}
 		pfifo->depth += sizeof(pmsg->head) + pmsg->head.len;
+		pfifo->rd %= pfifo->depth_max;
 	}
 	pthread_mutex_unlock(&pfifo->mutex);
 	return 0;
