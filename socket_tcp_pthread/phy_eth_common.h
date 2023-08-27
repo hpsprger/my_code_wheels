@@ -23,7 +23,7 @@
 
 #define MSG_FIFO_MAX  8192
 
-#define MSG_FIFO_LEN  512
+#define MSG_FIFO_LEN  128
 
 typedef struct _link_msg_fifo {
 	unsigned int wr;

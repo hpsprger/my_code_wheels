@@ -67,7 +67,7 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 	return 0;
 }
 // 断点调试   watch socket_dev.fifo->depth if socket_dev.fifo->depth > 512 
-// 断点调试   watch socket_dev.fifo->depth 
+// 断点调试   watch socket_dev.fifo->depth   p *socket_dev.fifo
 int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 {
 	msg_head head = {0};
