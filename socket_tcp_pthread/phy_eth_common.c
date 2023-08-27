@@ -305,6 +305,7 @@ void *socket_recv_task()
 			usleep(500);
 			continue;
 		}
+		msg.payload = data_buffer;
 		ret = recv_single_message_for_task(&msg, 500);
 		if (ret < 0) {
 			continue;
