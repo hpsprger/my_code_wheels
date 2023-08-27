@@ -63,7 +63,7 @@ void * sync_fsm_translation()
 	unsigned int delay;
 	unsigned int rx_fsm_change_count = 0;
 	unsigned int err_count = 0;
-	unsigned int rx_err_count_avg = 0;
+	float rx_err_count_avg = 0;
 	unsigned int rx_err_count_sum = 0;
 	unsigned int err_count_max = 0x0;
 	unsigned int err_count_min = 0xffffffff;
@@ -126,7 +126,7 @@ void * sync_fsm_translation()
 
 			rx_fsm_change_count++;
 			rx_err_count_sum += err_count + 1;
-			rx_err_count_avg = rx_err_count_sum / rx_fsm_change_count;
+			rx_err_count_avg = (float)rx_err_count_sum /  (float)rx_fsm_change_count;
 
 			link_fsm = SYNC_LINK_HIGH_TX;
 			err_count = 0;
@@ -163,7 +163,7 @@ void * sync_fsm_translation()
 
 			rx_fsm_change_count++;
 			rx_err_count_sum += err_count + 1;
-			rx_err_count_avg = rx_err_count_sum / rx_fsm_change_count;
+			rx_err_count_avg = (float)rx_err_count_sum /  (float)rx_fsm_change_count;
 
 			link_fsm = SYNC_LINK_LOW_TX;
 			err_count = 0;
@@ -201,7 +201,7 @@ void * sync_fsm_translation()
 
 			rx_fsm_change_count++;
 			rx_err_count_sum += err_count + 1;
-			rx_err_count_avg = rx_err_count_sum / rx_fsm_change_count;
+			rx_err_count_avg = (float)rx_err_count_sum /  (float)rx_fsm_change_count;
 
 			link_fsm = SYNC_LINK_TASKING;
 			err_count = 0;
@@ -240,7 +240,7 @@ void * sync_fsm_translation()
 				last_milliseconds = milliseconds;
 			}
 
-			ERROR_PRRINT("SYNC_LINK_TASKING =====7===delay:%dus===task_count=%d==milliseconds:%lld=====count_per_second=%lld====err_count_max=%d===err_count_min=%d===rx_err_count_avg=%d===rx_fsm_change_count=%lld \n", delay, task_count, milliseconds, count_per_second,err_count_max,err_count_min, rx_err_count_avg, rx_fsm_change_count);
+			ERROR_PRRINT("SYNC_LINK_TASKING =====7===delay:%dus===task_count=%d==milliseconds:%lld=====count_per_second=%lld====err_count_max=%d===err_count_min=%d===rx_err_count_avg=%2.2f===rx_fsm_change_count=%lld \n", delay, task_count, milliseconds, count_per_second,err_count_max,err_count_min, rx_err_count_avg, rx_fsm_change_count);
 			sleep(5); //观察用
 		}
 		task_count++;
