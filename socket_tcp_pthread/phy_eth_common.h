@@ -32,6 +32,7 @@ typedef struct _link_msg_fifo {
 	size_t depth; /* free space */
 	size_t depth_max;
 	char *buffer;
+	pthread_mutex_t mutex;
 } link_msg_fifo;
 
 typedef struct _msg_head {

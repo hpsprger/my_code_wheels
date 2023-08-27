@@ -21,7 +21,7 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		printf("push_msg_fifo  free space not enough \n");
 		return -1; /* free space not enough */
 	}
-
+	pthread_mutex_lock(&pfifo->mutex);
 	/* aroud or fist time is equal*/
 	if (pfifo->wr <= pfifo->rd) {
 		memcpy(pfifo->buffer[pfifo->wr], &pmsg->head, sizeof(pmsg->head));
@@ -59,6 +59,7 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		}
 		pfifo->depth -= msg_total_len;
 	}
+	pthread_mutex_unlock(&pfifo->mutex);
 	return 0;
 }
 
@@ -81,7 +82,7 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		printf("get_msg_fifo  empty \n");
 		return -1; /* fifo empty */
 	}
-
+	pthread_mutex_lock(&pfifo->mutex);
 	/* not aroud or fist time is equal*/
 	if (pfifo->rd <= pfifo->wr) {
 		memcpy(&pmsg->head, pfifo->buffer[pfifo->rd], sizeof(pmsg->head));
@@ -119,6 +120,7 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		}
 		pfifo->depth += sizeof(pmsg->head) + pmsg->head.len;
 	}
+	pthread_mutex_unlock(&pfifo->mutex);
 	return 0;
 }
 
@@ -262,6 +264,13 @@ int link_recv_single_message(link_msg *pmsg, unsigned int timeout)
 	return ret;
 }
 
+int recv_single_message_for_task(link_msg *pmsg, unsigned int timeout)
+{
+	int ret;
+	ret = recv_single_message(socket_dev.conn_fd, pmsg, timeout);
+	return ret;
+}
+
 void link_close(void)
 {
 	close(socket_dev.conn_fd);
@@ -283,7 +292,7 @@ int link_get_info(unsigned int type, void *info)
 	return 0;
 }
 
-
+unsigned char data_buffer[PAYLOAD_MAX_LEN];
 void *socket_recv_task()
 {
 	link_msg msg = {0};
@@ -296,7 +305,7 @@ void *socket_recv_task()
 			usleep(500);
 			continue;
 		}
-		ret = link_recv_single_message(&msg, 500);
+		ret = recv_single_message_for_task(&msg, 500);
 		if (ret < 0) {
 			continue;
 		}
@@ -340,6 +349,8 @@ int socket_init(unsigned int type)
 		perror("create_msg_fifo error.\n");
 		return -1;
 	}
+
+	pthread_mutex_init(&(socket_dev.fifo->mutex), NULL);
 
 	if(pthread_create(&tid , NULL , socket_recv_task, 0) == -1)
 	{
