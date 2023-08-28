@@ -26,15 +26,15 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		pthread_mutex_unlock(&pfifo->mutex);
 		return -1; /* free space not enough */
 	}
-	printf("pfifo->wr:%d\n", pfifo->wr);
+	//printf("pfifo->wr:%d\n", pfifo->wr);
 	/* aroud or fist time is equal*/
 	if (pfifo->wr < pfifo->rd) {
 		memcpy(&(pfifo->buffer[pfifo->wr]), &pmsg->head, sizeof(pmsg->head));
-		printf("000 -- ");
-		for (i = 0; i < sizeof(pmsg->head); i++) {
-			printf("0x%x ", pfifo->buffer[pfifo->wr + i]);
-		}
-		printf("\n");
+		//printf("000 -- ");
+		//for (i = 0; i < sizeof(pmsg->head); i++) {
+		//	printf("0x%x ", pfifo->buffer[pfifo->wr + i]);
+		//}
+		//printf("\n");
 		memcpy(&(pfifo->buffer[pfifo->wr + sizeof(pmsg->head)]), pmsg->payload, pmsg->head.len);
 		pfifo->wr += msg_total_len;
 		pfifo->depth -= msg_total_len;
@@ -44,30 +44,30 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		cur_len = pfifo->depth_max - pfifo->wr; /* cur_len: wr to depth_max*/
 		if (cur_len < sizeof(pmsg->head)) {
 			memcpy(&(pfifo->buffer[pfifo->wr]), &pmsg->head, cur_len);
-			for (i = 0; i < cur_len; i++) {
-				printf("111 0x%x ", pfifo->buffer[pfifo->wr + i]);
-			}
-			printf("\n");
+			//for (i = 0; i < cur_len; i++) {
+			//	printf("111 0x%x ", pfifo->buffer[pfifo->wr + i]);
+			//}
+			//printf("\n");
 			pfifo->wr = 0;
 			memcpy(&(pfifo->buffer[pfifo->wr]), ((char *)&pmsg->head) + cur_len, sizeof(pmsg->head) - cur_len);
-			for (i = 0; i < (sizeof(pmsg->head) - cur_len); i++) {
-				printf("111 0x%x ", pfifo->buffer[pfifo->wr + i]);
-			}
-			printf("\n");			
+			//for (i = 0; i < (sizeof(pmsg->head) - cur_len); i++) {
+			//	printf("111 0x%x ", pfifo->buffer[pfifo->wr + i]);
+			//}
+			//printf("\n");			
 			pfifo->wr += sizeof(pmsg->head) - cur_len;
 		} else if (cur_len == sizeof(pmsg->head)) {
 			memcpy(&(pfifo->buffer[pfifo->wr]), &pmsg->head, sizeof(pmsg->head));
-			for (i = 0; i < sizeof(pmsg->head); i++) {
-				printf("222 0x%x ", pfifo->buffer[pfifo->wr + i]);
-			}
-			printf("\n");
+			//for (i = 0; i < sizeof(pmsg->head); i++) {
+			//	printf("222 0x%x ", pfifo->buffer[pfifo->wr + i]);
+			//}
+			//printf("\n");
 			pfifo->wr = 0;
 		} else {
 			memcpy(&(pfifo->buffer[pfifo->wr]), &pmsg->head, sizeof(pmsg->head));
-			for (i = 0; i < sizeof(pmsg->head); i++) {
-				printf("333 0x%x ", pfifo->buffer[pfifo->wr + i]);
-			}
-			printf("\n");
+			//for (i = 0; i < sizeof(pmsg->head); i++) {
+			//	printf("333 0x%x ", pfifo->buffer[pfifo->wr + i]);
+			//}
+			//printf("\n");
 			pfifo->wr += sizeof(pmsg->head);
 		}
 		/* step2: copy payload */
@@ -115,7 +115,7 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 		pthread_mutex_unlock(&pfifo->mutex);
 		return -1; /* fifo empty */
 	}
-	printf("pfifo->rd:%d\n", pfifo->rd);
+	//printf("pfifo->rd:%d\n", pfifo->rd);
 	/* not aroud or fist time is equal*/
 	if (pfifo->rd < pfifo->wr) {
 		memcpy(&pmsg->head, &(pfifo->buffer[pfifo->rd]), sizeof(pmsg->head));
