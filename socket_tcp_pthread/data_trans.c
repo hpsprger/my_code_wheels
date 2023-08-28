@@ -257,7 +257,7 @@ void * sync_fsm_translation()
 		default:
 		break;
 		}
-#if 0
+
 		if (err_count > ERROR_MAX_CNT) {
 			get_link_info(&link_status);
 			data_trans.snapshot.link_status = link_status;
@@ -273,7 +273,7 @@ void * sync_fsm_translation()
 			link_fsm = SYNC_LINK_STOP;
 			err_count = 0;
 		}
-#endif
+
 		//usleep(LINK_FSM_USLEEP);
 		if (err_count > err_count_max) {
 			err_count_max = err_count;
