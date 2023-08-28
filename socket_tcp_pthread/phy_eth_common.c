@@ -346,7 +346,7 @@ void *socket_recv_task()
 		if (ret < 0) {
 			continue;
 		}
-		printf("push_msg_fifo   msg.head.len:%d \n", msg.head.len);
+		//printf("push_msg_fifo   msg.head.len:%d \n", msg.head.len);
 		ret = push_msg_fifo(socket_dev.fifo, &msg);
 		if (ret < 0) {
 			printf("push_msg_fifo failed ret:%d \n", ret);
