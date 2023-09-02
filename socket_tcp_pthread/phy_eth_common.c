@@ -212,6 +212,8 @@ void destroy_msg_fifo(link_msg_fifo *pfifo)
 //    rd_index = rd[n-1:0]
 //  wr == rd ==> FIFO 为空
 //  fifo_free_space = fifo_size  - (wr - rd)
+unsigned int fifo_full_cnt = 0;
+unsigned int fifo_empty_cnt = 0;
 int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg)
 {
 	unsigned int msg_total_len;
@@ -236,10 +238,11 @@ int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pms
 	free_space = pfifo->size - (pfifo->wr - pfifo->rd);
 
 	if (free_space < msg_total_len) {
-		printf("space is not enough ......wr:%d rd:%d  msg_total_len:0x%x size:0x%x \n", pfifo->wr, pfifo->rd, msg_total_len, pfifo->size);
+		fifo_full_cnt++;
+		printf("space is not enough ......wr:%d rd:%d  msg_total_len:0x%x size:0x%x fifo_full_cnt:%d \n", pfifo->wr, pfifo->rd, msg_total_len, pfifo->size, fifo_full_cnt);
 		return -1;
 	} else {
-		printf("space is     enough ......wr:%d rd:%d msg_total_len:0x%x size:0x%x \n", pfifo->wr, pfifo->rd, msg_total_len, pfifo->size);
+		printf("space is     enough ......wr:%d rd:%d msg_total_len:0x%x size:0x%x fifo_full_cnt:%d \n", pfifo->wr, pfifo->rd, msg_total_len, pfifo->size, fifo_full_cnt);
 	}
 
 	wr = GET_WR_INDEX(pfifo);
@@ -304,10 +307,11 @@ int get_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg
 	}
 
 	if (pfifo->wr == pfifo->rd) {
-		printf("get_msg_fifo  fifo empty  ..... wr:%d rd:%d size:0x%x \n", pfifo->wr, pfifo->rd, pfifo->size);
+		fifo_empty_cnt++;
+		printf("get_msg_fifo  fifo empty  ..... wr:%d rd:%d size:0x%x fifo_empty_cnt:%d \n", pfifo->wr, pfifo->rd, pfifo->size, fifo_empty_cnt);
 		return -1;
 	} else {
-		printf("get_msg_fifo  fifo normal ..... wr:%d rd:%d size:0x%x \n", pfifo->wr, pfifo->rd, pfifo->size);
+		printf("get_msg_fifo  fifo normal ..... wr:%d rd:%d size:0x%x fifo_empty_cnt:%d \n", pfifo->wr, pfifo->rd, pfifo->size, fifo_empty_cnt);
 	}
 
 	wr = GET_WR_INDEX(pfifo);
