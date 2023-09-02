@@ -93,8 +93,10 @@ int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 	pthread_mutex_unlock(&pfifo->mutex);
 	return 0;
 }
+
 // 断点调试   watch socket_dev.fifo->depth if socket_dev.fifo->depth > 128 
 // 断点调试   watch socket_dev.fifo->depth   p *socket_dev.fifo
+// 这个fifo也可以做成像 without lock 这种无锁设计的fifo一样，size 调整为2的n次方，就不用%操作了
 int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 {
 	msg_head head = {0};
@@ -162,6 +164,180 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 	return 0;
 }
 
+
+//针对一个生产者  一个消费者的情况(多个肯定要用锁)，通过让生产者来只更新wr指针，让消费者只更新rd指针，来做到无锁的FIFO设计
+//如果是多个生产者，多个消费者，如果是在一个系统中,可以用系统的锁来互斥
+//如果在多个系统间，只有一个生成者与一个消费者，可以用FIFO 这种无锁的设计，比如PCIE 的 RC  EP 要操作同一片共享内存做的FIFO的时候，可以用下面这种无锁设计，比如仅有的一个生产者RC去更新WR指针，仅有的一个消费者EP去更新RD指针，如果有多个消费者与生产者这又是不行的
+//如果像PCIE RC EP 这种跨系统的，假设又有多个生产者与消费者，那么就必须使用锁了，但是如果有某一个系统中锁显然是行不通的，所以只能用 hwspinlock锁 （peteson锁 能实现纯软件的锁实现，但是也只能是一个消费者 一个生产者的情况）
+//上面说的这种一个消费者 一个生产者的无锁FIFO设计，有人会说，你的push 或 get 函数中一定会用到 wr rd指针，这难道不会有竞态么？？？
+//我想说，竞态肯定有，比如push函数中，你去读rd指针，读到的rd值，有可能是没有更新的rd值，也有可能是更新后的rd值，但都不会影响FIFO的正常功能，比如你读的是老的rd值，那你的wr指针最多也就停留在老的这个rd位置，如果这时rd其实需要更新了，也没关系，比如多一次空判断，如果读到的就是更新后的rd值那就是正常的情况了，那正好符号最新的情况，最好了
+//所以wr也是类似的分析，所以也就是说这两个可能存在的竞争中间态，对FIFO功能无影响
+//FIFO 的 wr rd 指针，可以这么设计，来避免通过 %运算来取余的操作
+//1.FIFO的wr rd 用来做 写 读 数据的总计数器，一直往上加，做实际 写 读 的数据的总计数，计数的最大值回绕也没有关系 
+//2.FIFO的buffer的大小一定要为2的n次方的大小 ==> 这样 buffer的 wr_index or rd_index 的值 就是 wr or rd 总计数值 的 n-1:0 bit, 这样就避免了取余操作了
+//    wr_index = wr[n-1:0]
+//    rd_index = rd[n-1:0]
+//  wr == rd ==> FIFO 为空
+//  fifo_free_space = fifo_size  - (wr - rd)
+int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg)
+{
+	unsigned int msg_total_len;
+	unsigned int free_space;
+	unsigned int cur_len;
+	unsigned int i;
+	unsigned int wr;
+	unsigned int rd;
+
+	if (pfifo == NULL || pmsg == NULL) {
+		printf("push_msg_fifo pointer null\n");
+		return -1;
+	}
+
+	if (pmsg->payload == NULL) {
+		printf("push_msg_fifo payload null\n");
+		return -1;
+	}
+
+	msg_total_len = sizeof(pmsg->head) + pmsg->head.len;
+
+	wr = GET_WR_INDEX(pfifo);
+	rd = GET_WR_INDEX(pfifo);
+
+	free_space = pfifo->size - (wr - rd);
+
+	if (free_space < msg_total_len) {
+		printf("space is not enough\n");
+		return -1;
+	}
+
+	/* aroud or fist time is equal*/
+	if (wr < rd) {
+		memcpy(&(pfifo->buffer[wr]), &pmsg->head, sizeof(pmsg->head));
+		memcpy(&(pfifo->buffer[wr + sizeof(pmsg->head)]), pmsg->payload, pmsg->head.len);
+	} else {
+		/* step1: copy head */
+		cur_len = pfifo->size - wr; /* cur_len: wr to depth_max*/
+		if (cur_len < sizeof(pmsg->head)) {
+			memcpy(&(pfifo->buffer[wr]), &pmsg->head, cur_len);
+			wr = 0;
+			memcpy(&(pfifo->buffer[wr]), ((char *)&pmsg->head) + cur_len, sizeof(pmsg->head) - cur_len);		
+			wr += sizeof(pmsg->head) - cur_len;
+		} else if (cur_len == sizeof(pmsg->head)) {
+			memcpy(&(pfifo->buffer[wr]), &pmsg->head, sizeof(pmsg->head));
+			wr = 0;
+		} else {
+			memcpy(&(pfifo->buffer[wr]), &pmsg->head, sizeof(pmsg->head));
+			wr += sizeof(pmsg->head);
+		}
+		/* step2: copy payload */
+		cur_len = pfifo->size - wr; /* cur_len: wr to depth_max*/
+		if (cur_len < pmsg->head.len) {
+			memcpy(&(pfifo->buffer[wr]), pmsg->payload, cur_len);
+			wr = 0;
+			memcpy(&(pfifo->buffer[wr]), pmsg->payload + cur_len, pmsg->head.len - cur_len);
+			wr += pmsg->head.len - cur_len;
+		} else if (cur_len == pmsg->head.len) {
+			memcpy(&(pfifo->buffer[wr]), pmsg->payload, pmsg->head.len);
+			wr = 0;
+		} else {
+			memcpy(&(pfifo->buffer[wr]), pmsg->payload, pmsg->head.len);
+			wr += pmsg->head.len;
+		}
+	}
+
+	pfifo->wr += msg_total_len;
+
+	return 0;
+}
+
+int get_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg)
+{
+	msg_head head = {0};
+	unsigned int cur_len;
+	unsigned int wr;
+	unsigned int rd;
+	
+	if (pfifo == NULL || pmsg == NULL) {
+		printf("get_msg_fifo  pointer null \n");
+		return -1;
+	}
+
+	if (pmsg->payload == NULL) {
+		printf("get_msg_fifo  payload null \n");
+		return -1;
+	}
+
+	wr = GET_WR_INDEX(pfifo);
+	rd = GET_WR_INDEX(pfifo);
+
+	if (wr == rd) {
+		return -1;
+	}
+
+	if (rd < wr) {
+		memcpy(&pmsg->head, &(pfifo->buffer[rd]), sizeof(pmsg->head));
+		memcpy(pmsg->payload, &(pfifo->buffer[rd + sizeof(pmsg->head)]), pmsg->head.len);
+	} else {
+		/* step1: copy head */
+		cur_len = pfifo->size - rd; /* cur_len: rd to depth_max*/
+		if (cur_len < sizeof(pmsg->head)) {
+			memcpy(&pmsg->head, &(pfifo->buffer[rd]), cur_len);
+			rd = 0; 
+			memcpy((((char *)&pmsg->head) + cur_len), &(pfifo->buffer[rd]), sizeof(pmsg->head) - cur_len);
+			rd += sizeof(pmsg->head) - cur_len;
+		} else if (cur_len == sizeof(pmsg->head)) {
+			memcpy(&pmsg->head, &(pfifo->buffer[rd]), sizeof(pmsg->head));
+			rd = 0;
+		} else {
+			memcpy(&pmsg->head, &(pfifo->buffer[rd]), sizeof(pmsg->head));
+			rd += sizeof(pmsg->head);
+		}
+		/* step2: copy payload */
+		cur_len = pfifo->size - rd; /* cur_len: wr to depth_max*/
+		if (cur_len < pmsg->head.len) {
+			memcpy(pmsg->payload, &(pfifo->buffer[rd]), cur_len);
+			rd = 0;
+			memcpy(pmsg->payload + cur_len, &(pfifo->buffer[rd]), pmsg->head.len - cur_len);
+			rd += pmsg->head.len - cur_len;
+		} else if (cur_len == pmsg->head.len) {
+			memcpy(pmsg->payload, &(pfifo->buffer[rd]), pmsg->head.len);
+			rd = 0;
+		} else {
+			memcpy(pmsg->payload, &(pfifo->buffer[rd]), pmsg->head.len);
+			rd += pmsg->head.len;
+		}
+	}
+
+	pfifo->rd += sizeof(pmsg->head) + pmsg->head.len;
+
+	return 0;
+}
+
+unsigned int get_first_bit_1(unsigned int size) 
+{
+	unsigned int  i = 0;
+	unsigned int  shift_data = (unsigned int)0x8000000;
+	for (i = 0; i < 32; i++) {
+		if (shift_data & size) {
+			return 31 - i;
+		} else {
+			shift_data >>= 1;
+		}
+	}
+	return 0;
+}
+
+unsigned int get_adjusted_size_2n(unsigned int size) 
+{
+	int i = get_first_bit_1(size);
+	if (((unsigned int)0x1 << i) < size) {
+		return ((unsigned int)0x1 << (i + 1));
+	} else {
+		return ((unsigned int)0x1 << i);
+	}
+}
+
+
 link_msg_fifo *create_msg_fifo(size_t size)
 {
 	link_msg_fifo *msg_fifo = NULL;
@@ -182,8 +358,31 @@ link_msg_fifo *create_msg_fifo(size_t size)
 		return -1;
 	}
 
+	msg_fifo->size = size;
 	msg_fifo->depth = size;
 	msg_fifo->depth_max = size;
+
+	return msg_fifo;
+}
+
+
+link_msg_fifo_without_lock *create_msg_fifo_without_lock(size_t size)
+{
+	link_msg_fifo_without_lock *msg_fifo = NULL;
+	unsigned int adjuct_size = get_adjusted_size_2n(size);
+
+	if (adjuct_size > MSG_FIFO_MAX) {
+		return -1;
+	}
+
+	msg_fifo = (link_msg_fifo_without_lock *)malloc(sizeof(link_msg_fifo_without_lock) + adjuct_size);
+	if (msg_fifo == NULL) {
+		return -1;
+	}
+
+	(void)memset(msg_fifo, 0, sizeof(msg_fifo));
+
+	msg_fifo->size = adjuct_size;
 
 	return msg_fifo;
 }

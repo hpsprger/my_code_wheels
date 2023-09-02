@@ -25,9 +25,18 @@
 
 #define MSG_FIFO_LEN  128
 
+
+typedef struct _link_msg_fifo_without_lock {
+	unsigned int wr;
+	unsigned int rd;
+	unsigned int size;
+	char buffer[0];
+} link_msg_fifo_without_lock;
+
 typedef struct _link_msg_fifo {
 	unsigned int wr;
 	unsigned int rd;
+	unsigned int size;
 	unsigned int flag;
 	size_t depth; /* free space */
 	size_t depth_max;
@@ -66,6 +75,9 @@ typedef struct _socket_device {
     ((type *)( (char *)(ptr) - (unsigned long)(&((type*)0)->member)))
 
 #define DATA_COMM_STR "DATA_COMM"
+
+#define GET_WR_INDEX(fifo)  (fifo->wr & ((unsigned int)(fifo->size - 1)))
+#define GET_RD_INDEX(fifo)  (fifo->rd & ((unsigned int)(fifo->size - 1)))
 
 enum LINK_FSM {
 	SYNC_LINK_SETUP = 0,
