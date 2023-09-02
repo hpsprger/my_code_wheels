@@ -28,7 +28,7 @@ int data_trans_send_single_msg(unsigned int msg_type)
 
 	//这里进行变长的报文测试
 	msg_len = rand()%20 * 5;
-	printf("data_trans_send_single_msg msglen=%d \n", msg_len);
+	//printf("data_trans_send_single_msg msglen=%d \n", msg_len);
 	msg.head.type = msg_type;
 	msg.head.len = msg_len;
 	msg.payload = send_buffer;
