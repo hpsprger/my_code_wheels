@@ -17,14 +17,13 @@
 
 #define SERVER_LISTEN_MAX 6000
 
-#define ERROR_MAX_CNT 1000
+#define ERROR_MAX_CNT 5000
 #define RX_TIMEOUT 1000
 #define LINK_FSM_USLEEP 100
 
 #define MSG_FIFO_MAX  8192
 
-#define MSG_FIFO_LEN  128
-
+#define MSG_FIFO_LEN  256
 
 typedef struct _link_msg_fifo_without_lock {
 	unsigned int wr;

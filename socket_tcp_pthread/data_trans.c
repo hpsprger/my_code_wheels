@@ -245,7 +245,8 @@ void * sync_fsm_translation()
 				last_milliseconds = milliseconds;
 				count_per_second = 0;
 			} else {
-				count_per_second = ((float)5000 / (float)(milliseconds - last_milliseconds - 5000)) * (float)1000.0;
+				//count_per_second = ((float)5000 / (float)(milliseconds - last_milliseconds - 5000)) * (float)1000.0;
+				count_per_second = ((float)5000 / (float)(milliseconds - last_milliseconds)) * (float)1000.0;
 				last_milliseconds = milliseconds;
 			}
 
@@ -281,7 +282,8 @@ void * sync_fsm_translation()
 			err_count = 0;
 		}
 
-		//usleep(LINK_FSM_USLEEP);
+		usleep(LINK_FSM_USLEEP);
+	
 		if (err_count > err_count_max) {
 			err_count_max = err_count;
 		}
