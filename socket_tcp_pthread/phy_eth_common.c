@@ -233,15 +233,18 @@ int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pms
 
 	msg_total_len = sizeof(pmsg->head) + pmsg->head.len;
 
+	free_space = pfifo->size - (pfifo->wr - pfifo->rd);
+
+	if (free_space < msg_total_len) {
+		printf("space is not enough ......wr:%d rd:%d  msg_total_len:0x%x size:0x%x \n", pfifo->wr, pfifo->rd, msg_total_len, pfifo->size);
+		return -1;
+	} else {
+		printf("space is     enough ......wr:%d rd:%d msg_total_len:0x%x size:0x%x \n", pfifo->wr, pfifo->rd, msg_total_len, pfifo->size);
+	}
+
 	wr = GET_WR_INDEX(pfifo);
 	rd = GET_RD_INDEX(pfifo);
 
-	free_space = pfifo->size - (wr - rd);
-
-	if (free_space < msg_total_len) {
-		printf("space is not enough\n");
-		return -1;
-	}
 
 	/* aroud or fist time is equal*/
 	if (wr < rd) {
@@ -300,12 +303,15 @@ int get_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg
 		return -1;
 	}
 
+	if (pfifo->wr == pfifo->rd) {
+		printf("get_msg_fifo  fifo empty  ..... wr:%d rd:%d size:0x%x \n", pfifo->wr, pfifo->rd, pfifo->size);
+		return -1;
+	} else {
+		printf("get_msg_fifo  fifo normal ..... wr:%d rd:%d size:0x%x \n", pfifo->wr, pfifo->rd, pfifo->size);
+	}
+
 	wr = GET_WR_INDEX(pfifo);
 	rd = GET_RD_INDEX(pfifo);
-
-	if (wr == rd) {
-		return -1;
-	}
 
 	if (rd < wr) {
 		memcpy(&pmsg->head, &(pfifo->buffer[rd]), sizeof(pmsg->head));

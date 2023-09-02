@@ -89,7 +89,7 @@ link_msg_fifo_without_lock *pfifo = NULL;
 #define SHM_NAME "fifo_unlock_test"
 #define SHM_SIZE 0x400000
 #define FIFO_UNLOCK_SIZE 1024   //fifo size must be 2'n 
-#define MAGIC_NUM 0xa5a55a5a
+#define MAGIC_NUM 0xa5a5
 
 unsigned char msg_buffer[4096];
 
@@ -97,6 +97,7 @@ void * test_fifo_thread_tx()
 {
 	unsigned int delay = 0;
 	unsigned int len = 0;
+	unsigned int count = 0;
 	int fd;
 	link_msg msg = {0};
 	int ret =0;
@@ -122,18 +123,20 @@ void * test_fifo_thread_tx()
 	pfifo->size = FIFO_UNLOCK_SIZE; //fifo size must be 2'n 
 
 	while (1) {
-		delay = rand()%100;
+		delay = rand()%10;
 		len = rand()%10 * 20;
 		msg.head.type = MAGIC_NUM;
 		msg.head.len = len;
 		msg.payload = msg_buffer;
 		ret = push_msg_fifo_without_lock(pfifo, &msg);
 		if (ret != 0) {
-			printf("push_msg_fifo_without_lock failed ...\n");
+			printf("push_msg_fifo_without_lock count:%d failed ...", count);
 		} else {
-			printf("push_msg_fifo_without_lock ok ...\n");
+			printf("push_msg_fifo_without_lock count:%d ok ...", count);
 		}
-		printf("test_fifo_thread_tx  usleep:0x%d...\n", delay);
+		count++;
+		delay = delay * 100000;
+		printf("usleep:%d...\n\n\n", delay);
 		usleep(delay);
 	}
 
@@ -149,6 +152,8 @@ void * test_fifo_thread_rx()
 	int fd;
 	link_msg msg = {0};
 	int ret =0;
+	unsigned int count = 0;
+	unsigned int check_err_count = 0;
 
 	fd = shm_open(SHM_NAME, O_CREAT | O_RDWR, 0666);
 	if (fd == -1) {
@@ -171,22 +176,25 @@ void * test_fifo_thread_rx()
 	pfifo->size = FIFO_UNLOCK_SIZE; //fifo size must be 2'n 
 
 	while (1) {
-		delay = rand()%100;
+		delay = rand()%10;
 		msg.head.type = 0;
 		msg.head.len = 0;
 		msg.payload = msg_buffer;
+		delay = delay * 100000;
+		count++;
 		ret = get_msg_fifo_without_lock(pfifo, &msg);
 		if (ret != 0) {
-			printf("get_msg_fifo_without_lock failed ...\n");
+			printf("test_fifo_thread_rx  get_msg_fifo_without_lock failed ...count:%d check_err_count:%d  usleep:%d...\n\n\n", count, check_err_count, delay);
 			usleep(delay);
 			continue;
 		}
 		if (msg.head.type != MAGIC_NUM) {
-			printf("rx msg head err  expected:0x%x -- actual:0x%x \n", MAGIC_NUM, msg.head.type);
+			check_err_count++;
+			printf("=======test_fifo_thread_rx  count:%d  fail  expected:0x%x -- actual:0x%x  check_err_count:%d ========== \n\n\n ", count, MAGIC_NUM, msg.head.type, check_err_count);
+			sleep(10);
 		} else {
-			printf("test_fifo_thread_rx verify ok...\n");
+			printf("test_fifo_thread_rx  count:%d  check_err_count:%d  ok... usleep:%d...\n\n\n", count, check_err_count, delay);
 		}
-		printf("test_fifo_thread_rx  usleep:0x%d...\n", delay);
 		usleep(delay);
 	}
 
