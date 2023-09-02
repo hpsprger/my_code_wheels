@@ -136,9 +136,9 @@ void * test_fifo_thread_tx()
 		}
 		count++;
 		if (delay > 70) {
-			delay = 300;
+			delay = 500;
 		}
-		delay = delay * 10000;
+		delay = delay * 5000;
 		printf("usleep:%d...\n\n\n", delay);
 		usleep(delay);
 	}
@@ -184,9 +184,9 @@ void * test_fifo_thread_rx()
 		msg.head.len = 0;
 		msg.payload = msg_buffer;
 		if (delay > 70) {
-			delay = 200;
+			delay = 250;
 		}
-		delay = delay * 10000;
+		delay = delay * 5000;
 		count++;
 		ret = get_msg_fifo_without_lock(pfifo, &msg);
 		if (ret != 0) {
