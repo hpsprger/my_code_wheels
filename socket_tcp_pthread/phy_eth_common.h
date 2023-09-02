@@ -19,7 +19,7 @@
 
 #define ERROR_MAX_CNT 5000
 #define RX_TIMEOUT 1000
-#define LINK_FSM_USLEEP 100
+#define LINK_FSM_USLEEP 200
 
 #define MSG_FIFO_MAX  8192
 
