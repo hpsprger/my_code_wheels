@@ -135,7 +135,7 @@ void * test_fifo_thread_tx()
 			printf("push_msg_fifo_without_lock send ok count:%d  ...", count);
 		}
 		count++;
-		if (delay > 50) {
+		if (delay > 70) {
 			delay = 300;
 		}
 		delay = delay * 10000;
@@ -183,7 +183,7 @@ void * test_fifo_thread_rx()
 		msg.head.type = 0;
 		msg.head.len = 0;
 		msg.payload = msg_buffer;
-		if (delay > 50) {
+		if (delay > 70) {
 			delay = 200;
 		}
 		delay = delay * 10000;
