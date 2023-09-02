@@ -15,16 +15,23 @@ int get_link_info(unsigned int *link_status)
 	return ret;
 }
 
+unsigned char send_buffer[4096];
+
 int data_trans_send_single_msg(unsigned int msg_type)
 {
 	int ret;
+	int msg_len = 0;
 	link_msg msg;
 	if (msg_type >= SYNC_MSG_MAX) {
 		return -1;
 	}
+
+	//这里进行变长的报文测试
+	msg_len = rand()%20 * 5;
+	printf("data_trans_send_single_msg msglen=%d \n", msg_len);
 	msg.head.type = msg_type;
-	msg.head.len = strlen(DATA_COMM_STR);
-	msg.payload = DATA_COMM_STR;
+	msg.head.len = msg_len;
+	msg.payload = send_buffer;
 	ret = data_trans.ops->send(&msg);
 	return ret;
 }
@@ -243,7 +250,7 @@ void * sync_fsm_translation()
 			}
 
 			ERROR_PRRINT("SYNC_LINK_TASKING ======dly:%dus===tsk_cnt=%d===ms:%lld===tskcnt_per_sec=%lld===err_cnt_max=%d===err_cnt_min=%d===cur tsk_fsm_cnt=%d tsk_fsm_cnt_min=%d tsk_fsm_cnt_max=%d tsk_fsm_cnt_avg=%2.2f \n",  delay, task_count, milliseconds, count_per_second, err_count_max,err_count_min, one_task_fsm_change_count, one_task_fsm_change_count_min, one_task_fsm_change_count_max, one_task_fsm_change_count_avg);
-			sleep(5); //观察用
+			//sleep(5); //观察用
 		}
 		one_task_fsm_change_count = 0;
 		task_count++;

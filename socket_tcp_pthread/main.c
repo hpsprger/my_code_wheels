@@ -7,9 +7,9 @@ char rcv_text[PAYLOAD_MAX_LEN];
 
 char server_ip[PAYLOAD_MAX_LEN];
 
-// ./main 0 ==> server
-// ./main 1 ==> client
-void main(int argc, char* argv[])
+// ./chnnl_sync 0 ==> server
+// ./chnnl_sync 1 127.0.0.1 ==> client 连接服务器，并通信
+void main(int argc, char* argv[]) 
 {
 	char choose[CHOOSE_MAX_LINE];
 	pthread_t tid;

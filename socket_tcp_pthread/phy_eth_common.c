@@ -499,7 +499,8 @@ int link_recv_single_message(link_msg *pmsg, unsigned int timeout)
 {
 	int ret;
 	//ret = recv_single_message(socket_dev.conn_fd, pmsg, timeout);
-	ret = get_msg_fifo(socket_dev.fifo, pmsg);
+	//ret = get_msg_fifo(socket_dev.fifo, pmsg); //有锁的设计
+	ret = get_msg_fifo_without_lock(socket_dev.fifo_without_lock, pmsg); //无锁的设计
 	return ret;
 }
 
@@ -532,6 +533,7 @@ int link_get_info(unsigned int type, void *info)
 }
 
 unsigned char data_buffer[PAYLOAD_MAX_LEN];
+
 void *socket_recv_task()
 {
 	link_msg msg = {0};
@@ -550,32 +552,14 @@ void *socket_recv_task()
 			continue;
 		}
 		//printf("push_msg_fifo   msg.head.len:%d \n", msg.head.len);
-		ret = push_msg_fifo(socket_dev.fifo, &msg);
+		//ret = push_msg_fifo(socket_dev.fifo, &msg); //使用带锁的设计
+		ret = push_msg_fifo_without_lock(socket_dev.fifo_without_lock, &msg);//使用无锁设计
 		if (ret < 0) {
 			printf("push_msg_fifo failed ret:%d \n", ret);
 		}
-		usleep(500);
+		usleep(100);
 	}
 }
-
-int socket_init(unsigned int type);
-void *client_entry();
-void *server_entry();
-
-socket_device socket_dev = {
-	.listen_fd = 0,
-	.conn_fd = 0,
-	.link_status = SYNC_LINK_DISCONNECTED,
-	.ops = {
-		.init = socket_init,
-		.send = link_send_single_message,
-		.recv = link_recv_single_message,
-		.get = link_get_info,
-		.set = NULL,
-		.close = link_close,
-	},
-	.fifo = 0,
-};
 
 int socket_init(unsigned int type)
 {
@@ -585,6 +569,7 @@ int socket_init(unsigned int type)
 
 	socket_dev.link_status = SYNC_LINK_DISCONNECTED;
 
+#if 0
 	socket_dev.fifo = create_msg_fifo(MSG_FIFO_LEN);
 	if (socket_dev.fifo == NULL) {
 		perror("create_msg_fifo error.\n");
@@ -592,6 +577,14 @@ int socket_init(unsigned int type)
 	}
 
 	pthread_mutex_init(&(socket_dev.fifo->mutex), NULL);
+
+#endif 
+
+	socket_dev.fifo_without_lock = create_msg_fifo(MSG_FIFO_LEN); 
+	if (socket_dev.fifo_without_lock == NULL) {
+		perror("create_msg_fifo error.\n");
+		return -1;
+	}
 
 	if(pthread_create(&tid , NULL , socket_recv_task, 0) == -1)
 	{
@@ -620,3 +613,18 @@ int socket_init(unsigned int type)
 	return 0;
 }
 
+socket_device socket_dev = {
+	.listen_fd = 0,
+	.conn_fd = 0,
+	.link_status = SYNC_LINK_DISCONNECTED,
+	.ops = {
+		.init = socket_init,
+		.send = link_send_single_message,
+		.recv = link_recv_single_message,
+		.get = link_get_info,
+		.set = NULL,
+		.close = link_close,
+	},
+	.fifo = 0,
+	.fifo_without_lock = 0,
+};

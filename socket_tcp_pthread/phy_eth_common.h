@@ -69,6 +69,7 @@ typedef struct _socket_device {
 	int link_status;
 	device_ops ops;
 	link_msg_fifo *fifo;
+	link_msg_fifo_without_lock *fifo_without_lock;
 } socket_device;
 
 #define GET_ENTRY(ptr, type, member) \
@@ -119,5 +120,7 @@ enum DEVICE_TYPE {
 };
 
 extern socket_device socket_dev;
+extern void *client_entry();
+extern void *server_entry();
 
 #endif
