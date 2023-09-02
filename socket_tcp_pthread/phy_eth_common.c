@@ -165,6 +165,39 @@ int get_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 }
 
 
+link_msg_fifo *create_msg_fifo(size_t size)
+{
+	link_msg_fifo *msg_fifo = NULL;
+
+	if (size > MSG_FIFO_MAX) {
+		return -1;
+	}
+
+	msg_fifo = (link_msg_fifo *)malloc(sizeof(link_msg_fifo));
+	if (msg_fifo == NULL) {
+		return -1;
+	}
+
+	(void)memset(msg_fifo, 0, sizeof(msg_fifo));
+
+	msg_fifo->buffer = (char *)malloc(size);
+	if (msg_fifo->buffer == NULL) {
+		return -1;
+	}
+
+	msg_fifo->size = size;
+	msg_fifo->depth = size;
+	msg_fifo->depth_max = size;
+
+	return msg_fifo;
+}
+
+void destroy_msg_fifo(link_msg_fifo *pfifo)
+{
+	free(pfifo->buffer);
+	free(pfifo);
+}
+
 //针对一个生产者  一个消费者的情况(多个肯定要用锁)，通过让生产者来只更新wr指针，让消费者只更新rd指针，来做到无锁的FIFO设计
 //如果是多个生产者，多个消费者，如果是在一个系统中,可以用系统的锁来互斥
 //如果在多个系统间，只有一个生成者与一个消费者，可以用FIFO 这种无锁的设计，比如PCIE 的 RC  EP 要操作同一片共享内存做的FIFO的时候，可以用下面这种无锁设计，比如仅有的一个生产者RC去更新WR指针，仅有的一个消费者EP去更新RD指针，如果有多个消费者与生产者这又是不行的
@@ -337,35 +370,6 @@ unsigned int get_adjusted_size_2n(unsigned int size)
 	}
 }
 
-
-link_msg_fifo *create_msg_fifo(size_t size)
-{
-	link_msg_fifo *msg_fifo = NULL;
-
-	if (size > MSG_FIFO_MAX) {
-		return -1;
-	}
-
-	msg_fifo = (link_msg_fifo *)malloc(sizeof(link_msg_fifo));
-	if (msg_fifo == NULL) {
-		return -1;
-	}
-
-	(void)memset(msg_fifo, 0, sizeof(msg_fifo));
-
-	msg_fifo->buffer = (char *)malloc(size);
-	if (msg_fifo->buffer == NULL) {
-		return -1;
-	}
-
-	msg_fifo->size = size;
-	msg_fifo->depth = size;
-	msg_fifo->depth_max = size;
-
-	return msg_fifo;
-}
-
-
 link_msg_fifo_without_lock *create_msg_fifo_without_lock(size_t size)
 {
 	link_msg_fifo_without_lock *msg_fifo = NULL;
@@ -387,12 +391,10 @@ link_msg_fifo_without_lock *create_msg_fifo_without_lock(size_t size)
 	return msg_fifo;
 }
 
-void destroy_msg_fifo(link_msg_fifo *pfifo)
+void destroy_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo)
 {
-	free(pfifo->buffer);
 	free(pfifo);
 }
-
 
 int send_single_message(int sockfd, link_msg *pmsg)
 {
