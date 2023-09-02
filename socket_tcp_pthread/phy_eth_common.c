@@ -379,6 +379,8 @@ link_msg_fifo_without_lock *create_msg_fifo_without_lock(size_t size)
 		return -1;
 	}
 
+	printf("fifo_without_lock size:0x%d \n", adjuct_size);
+
 	msg_fifo = (link_msg_fifo_without_lock *)malloc(sizeof(link_msg_fifo_without_lock) + adjuct_size);
 	if (msg_fifo == NULL) {
 		return -1;
