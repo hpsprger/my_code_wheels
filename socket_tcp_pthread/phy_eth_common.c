@@ -2,6 +2,8 @@
 
 // p *socket_dev.fifo
 // x /32x socket_dev.fifo->buffer
+//我这个带锁的设计，适合用于多个生产者，多个消费者，但是不适用于 PCIE RC EP 之间的这种跨系统的共享内存中使用
+//如果是多个生产者，多个消费者，必须要用hwspinlock了，peteson锁只能用于一个生产者 一个消费者的情况
 int push_msg_fifo(link_msg_fifo *pfifo,  link_msg *pmsg)
 {
 	unsigned int msg_total_len;
