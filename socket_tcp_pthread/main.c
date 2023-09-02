@@ -123,7 +123,7 @@ void * test_fifo_thread_tx()
 	pfifo->size = FIFO_UNLOCK_SIZE; //fifo size must be 2'n 
 
 	while (1) {
-		delay = rand()%10;
+		delay = rand()%200;
 		len = rand()%10 * 20;
 		msg.head.type = MAGIC_NUM;
 		msg.head.len = len;
@@ -176,7 +176,7 @@ void * test_fifo_thread_rx()
 	pfifo->size = FIFO_UNLOCK_SIZE; //fifo size must be 2'n 
 
 	while (1) {
-		delay = rand()%10;
+		delay = rand()%200;
 		msg.head.type = 0;
 		msg.head.len = 0;
 		msg.payload = msg_buffer;
