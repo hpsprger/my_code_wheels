@@ -234,7 +234,7 @@ int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pms
 	msg_total_len = sizeof(pmsg->head) + pmsg->head.len;
 
 	wr = GET_WR_INDEX(pfifo);
-	rd = GET_WR_INDEX(pfifo);
+	rd = GET_RD_INDEX(pfifo);
 
 	free_space = pfifo->size - (wr - rd);
 
@@ -301,7 +301,7 @@ int get_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg
 	}
 
 	wr = GET_WR_INDEX(pfifo);
-	rd = GET_WR_INDEX(pfifo);
+	rd = GET_RD_INDEX(pfifo);
 
 	if (wr == rd) {
 		return -1;
