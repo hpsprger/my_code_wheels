@@ -214,6 +214,8 @@ void destroy_msg_fifo(link_msg_fifo *pfifo)
 //  fifo_free_space = fifo_size  - (wr - rd)
 unsigned int fifo_full_cnt = 0;
 unsigned int fifo_empty_cnt = 0;
+unsigned int push_case_cnt[10] = {0};
+unsigned int push_cnt = 0;
 int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg)
 {
 	unsigned int msg_total_len;
@@ -248,47 +250,57 @@ int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pms
 	wr = GET_WR_INDEX(pfifo);
 	rd = GET_RD_INDEX(pfifo);
 
-
+	push_cnt++;
 	/* aroud or fist time is equal*/
 	if (wr < rd) {
+		push_case_cnt[0]++;
 		memcpy(&(pfifo->buffer[wr]), &pmsg->head, sizeof(pmsg->head));
 		memcpy(&(pfifo->buffer[wr + sizeof(pmsg->head)]), pmsg->payload, pmsg->head.len);
 	} else {
 		/* step1: copy head */
 		cur_len = pfifo->size - wr; /* cur_len: wr to depth_max*/
 		if (cur_len < sizeof(pmsg->head)) {
+			push_case_cnt[1]++;
 			memcpy(&(pfifo->buffer[wr]), &pmsg->head, cur_len);
 			wr = 0;
 			memcpy(&(pfifo->buffer[wr]), ((char *)&pmsg->head) + cur_len, sizeof(pmsg->head) - cur_len);		
 			wr += sizeof(pmsg->head) - cur_len;
 		} else if (cur_len == sizeof(pmsg->head)) {
+			push_case_cnt[2]++;
 			memcpy(&(pfifo->buffer[wr]), &pmsg->head, sizeof(pmsg->head));
 			wr = 0;
 		} else {
+			push_case_cnt[3]++;
 			memcpy(&(pfifo->buffer[wr]), &pmsg->head, sizeof(pmsg->head));
 			wr += sizeof(pmsg->head);
 		}
 		/* step2: copy payload */
 		cur_len = pfifo->size - wr; /* cur_len: wr to depth_max*/
 		if (cur_len < pmsg->head.len) {
+			push_case_cnt[4]++;
 			memcpy(&(pfifo->buffer[wr]), pmsg->payload, cur_len);
 			wr = 0;
 			memcpy(&(pfifo->buffer[wr]), pmsg->payload + cur_len, pmsg->head.len - cur_len);
 			wr += pmsg->head.len - cur_len;
 		} else if (cur_len == pmsg->head.len) {
+			push_case_cnt[5]++;
 			memcpy(&(pfifo->buffer[wr]), pmsg->payload, pmsg->head.len);
 			wr = 0;
 		} else {
+			push_case_cnt[6]++;
 			memcpy(&(pfifo->buffer[wr]), pmsg->payload, pmsg->head.len);
 			wr += pmsg->head.len;
 		}
 	}
-
 	pfifo->wr += msg_total_len;
-
+	if (push_cnt % 100 == 0) {
+		printf("push_cnt:%d push_case_cnt[0]:%d push_case_cnt[1]:%d push_case_cnt[2]:%d push_case_cnt[3]:%d push_case_cnt[4]:%d push_case_cnt[5]:%d push_case_cnt[6]:%d \n\n\n", push_cnt, push_case_cnt[0], push_case_cnt[1], push_case_cnt[2], push_case_cnt[3], push_case_cnt[4], push_case_cnt[5], push_case_cnt[6]);
+	}
 	return 0;
 }
 
+unsigned int get_case_cnt[10] = {0};
+unsigned int get_cnt = 0;
 int get_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg)
 {
 	msg_head head = {0};
@@ -317,41 +329,54 @@ int get_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg
 	wr = GET_WR_INDEX(pfifo);
 	rd = GET_RD_INDEX(pfifo);
 
+	get_cnt++;
+
 	if (rd < wr) {
+		get_case_cnt[0]++;
 		memcpy(&pmsg->head, &(pfifo->buffer[rd]), sizeof(pmsg->head));
 		memcpy(pmsg->payload, &(pfifo->buffer[rd + sizeof(pmsg->head)]), pmsg->head.len);
 	} else {
 		/* step1: copy head */
 		cur_len = pfifo->size - rd; /* cur_len: rd to depth_max*/
 		if (cur_len < sizeof(pmsg->head)) {
+			get_case_cnt[1]++;
 			memcpy(&pmsg->head, &(pfifo->buffer[rd]), cur_len);
 			rd = 0; 
 			memcpy((((char *)&pmsg->head) + cur_len), &(pfifo->buffer[rd]), sizeof(pmsg->head) - cur_len);
 			rd += sizeof(pmsg->head) - cur_len;
 		} else if (cur_len == sizeof(pmsg->head)) {
+			get_case_cnt[2]++;
 			memcpy(&pmsg->head, &(pfifo->buffer[rd]), sizeof(pmsg->head));
 			rd = 0;
 		} else {
+			get_case_cnt[3]++;
 			memcpy(&pmsg->head, &(pfifo->buffer[rd]), sizeof(pmsg->head));
 			rd += sizeof(pmsg->head);
 		}
 		/* step2: copy payload */
 		cur_len = pfifo->size - rd; /* cur_len: wr to depth_max*/
 		if (cur_len < pmsg->head.len) {
+			get_case_cnt[4]++;
 			memcpy(pmsg->payload, &(pfifo->buffer[rd]), cur_len);
 			rd = 0;
 			memcpy(pmsg->payload + cur_len, &(pfifo->buffer[rd]), pmsg->head.len - cur_len);
 			rd += pmsg->head.len - cur_len;
 		} else if (cur_len == pmsg->head.len) {
+			get_case_cnt[5]++;
 			memcpy(pmsg->payload, &(pfifo->buffer[rd]), pmsg->head.len);
 			rd = 0;
 		} else {
+			get_case_cnt[6]++;
 			memcpy(pmsg->payload, &(pfifo->buffer[rd]), pmsg->head.len);
 			rd += pmsg->head.len;
 		}
 	}
 
 	pfifo->rd += sizeof(pmsg->head) + pmsg->head.len;
+
+	if (get_cnt % 100 == 0) {
+		printf("get_cnt:%d get_case_cnt[0]:%d get_case_cnt[1]:%d get_case_cnt[2]:%d get_case_cnt[3]:%d get_case_cnt[4]:%d get_case_cnt[5]:%d get_case_cnt[6]:%d \n\n\n", get_cnt, get_case_cnt[0], get_case_cnt[1], get_case_cnt[2], get_case_cnt[3], get_case_cnt[4], get_case_cnt[5], get_case_cnt[6]);
+	}
 
 	return 0;
 }
