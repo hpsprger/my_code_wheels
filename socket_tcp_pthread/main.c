@@ -90,8 +90,11 @@ link_msg_fifo_without_lock *pfifo = NULL;
 #define SHM_SIZE 0x400000
 #define FIFO_UNLOCK_SIZE 1024   //fifo size must be 2'n 
 #define MAGIC_NUM 0xa5a5
+#define BUFFER1 0x11
+#define BUFFER2 0x22
 
-unsigned char msg_buffer[4096];
+unsigned char tx_msg_buffer[4096];
+unsigned char rx_msg_buffer[4096];
 
 void * test_fifo_thread_tx()
 {
@@ -128,8 +131,10 @@ void * test_fifo_thread_tx()
 		delay = rand()%100;
 		len = rand()%10 * 20;
 		msg.head.type = MAGIC_NUM;
-		msg.head.len = len;
-		msg.payload = msg_buffer;
+		msg.head.len = len + 4;//因为有buffer[0] buffer[1]的判断，所以至少要有4个字节
+		msg.payload = tx_msg_buffer;
+		tx_msg_buffer[0] = BUFFER1;
+		tx_msg_buffer[1] = BUFFER2;
 		count++;
 		ret = push_msg_fifo_without_lock(pfifo, &msg);
 		if (ret != 0) {
@@ -140,9 +145,9 @@ void * test_fifo_thread_tx()
 			printf("push_msg_fifo_without_lock send ok count:%d  count_tx_ok:%d count_tx_fail:%d...", count, count_tx_ok, count_tx_fail);
 		}
 		if (delay > 70) {
-			delay = 500;
+			delay = 800;
 		}
-		delay = delay * 5000;
+		delay = delay * 500;
 		printf("usleep:%d...\n\n\n", delay);
 		usleep(delay);
 	}
@@ -188,11 +193,13 @@ void * test_fifo_thread_rx()
 		delay = rand()%100;
 		msg.head.type = 0;
 		msg.head.len = 0;
-		msg.payload = msg_buffer;
+		msg.payload = rx_msg_buffer;
+		rx_msg_buffer[0] = 0;
+		rx_msg_buffer[1] = 0;		
 		if (delay > 70) {
-			delay = 250;
+			delay = 800;
 		}
-		delay = delay * 5000;
+		delay = delay * 500;
 		count++;
 		ret = get_msg_fifo_without_lock(pfifo, &msg);
 		if (ret != 0) {
@@ -202,12 +209,12 @@ void * test_fifo_thread_rx()
 			continue;
 		}
 		count_rx_ok++;
-		if (msg.head.type != MAGIC_NUM) {
+		if ((msg.head.type != MAGIC_NUM) || (rx_msg_buffer[0] != BUFFER1) || (rx_msg_buffer[1] != BUFFER2)){
 			check_err_count++;
-			printf("test_fifo_thread_rx check-error count:%d count_rx_ok:%d count_rx_fail:%d check_pass_count:%d check_err_count:%d  expected:0x%x -- actual:0x%x  usleep:%d \n\n\n ", count, count_rx_ok, count_rx_fail, check_pass_count, check_err_count, MAGIC_NUM, msg.head.type, delay);
+			printf("test_fifo_thread_rx check-error count:%d count_rx_ok:%d count_rx_fail:%d check_pass_count:%d check_err_count:%d  type:0x%x data[0]:0x%x data[1]:0x%x usleep:%d \n\n\n ", count, count_rx_ok, count_rx_fail, check_pass_count, check_err_count, msg.head.type, rx_msg_buffer[0], rx_msg_buffer[1], delay);
 		} else {
 			check_pass_count++;
-			printf("test_fifo_thread_rx check-pass count:%d count_rx_ok:%d count_rx_fail:%d check_pass_count:%d check_err_count:%d  usleep:%d...\n\n\n", count, count_rx_ok, count_rx_fail, check_pass_count, check_err_count, delay);
+			printf("test_fifo_thread_rx check-pass  count:%d count_rx_ok:%d count_rx_fail:%d check_pass_count:%d check_err_count:%d  type:0x%x data[0]:0x%x data[1]:0x%x usleep:%d \n\n\n ", count, count_rx_ok, count_rx_fail, check_pass_count, check_err_count, msg.head.type, rx_msg_buffer[0], rx_msg_buffer[1], delay);
 		}
 		usleep(delay);
 	}
