@@ -239,10 +239,10 @@ int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pms
 
 	if (free_space < msg_total_len) {
 		fifo_full_cnt++;
-		printf("space is not enough ......wr:%d rd:%d  msg_total_len:0x%x size:0x%x fifo_full_cnt:%d \n", pfifo->wr, pfifo->rd, msg_total_len, pfifo->size, fifo_full_cnt);
+		printf("space is not enough ......wr:%d rd:%d  msg_total_len:0x%x free_space:0x%x size:0x%x fifo_full_cnt:%d \n", pfifo->wr, pfifo->rd, msg_total_len, free_space, pfifo->size, fifo_full_cnt);
 		return -1;
 	} else {
-		printf("space is     enough ......wr:%d rd:%d msg_total_len:0x%x size:0x%x fifo_full_cnt:%d \n", pfifo->wr, pfifo->rd, msg_total_len, pfifo->size, fifo_full_cnt);
+		printf("space is     enough ......wr:%d rd:%d msg_total_len:0x%x free_space:0x%x size:0x%x fifo_full_cnt:%d \n", pfifo->wr, pfifo->rd, msg_total_len, free_space, pfifo->size, fifo_full_cnt);
 	}
 
 	wr = GET_WR_INDEX(pfifo);

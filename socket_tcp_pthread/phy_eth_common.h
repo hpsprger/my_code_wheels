@@ -26,8 +26,8 @@
 #define MSG_FIFO_LEN  256
 
 typedef struct _link_msg_fifo_without_lock {
-	unsigned int wr;
-	unsigned int rd;
+	unsigned short wr;
+	unsigned short rd;
 	unsigned int size;
 	char buffer[0];
 } link_msg_fifo_without_lock;
@@ -44,8 +44,8 @@ typedef struct _link_msg_fifo {
 } link_msg_fifo;
 
 typedef struct _msg_head {
-	unsigned short type;
-	unsigned short len;
+	unsigned short type; //把这个值的类型改为 unsigned short了，方便 压测 翻转的场景，要不然要等很久才能翻转
+	unsigned short len;  //把这个值的类型改为 unsigned short了，方便 压测 翻转的场景，要不然要等很久才能翻转
 } msg_head;
 
 typedef struct _link_msg {
