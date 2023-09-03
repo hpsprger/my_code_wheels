@@ -139,16 +139,16 @@ void * test_fifo_thread_tx()
 		ret = push_msg_fifo_without_lock(pfifo, &msg);
 		if (ret != 0) {
 			count_tx_fail++;
-			printf("push_msg_fifo_without_lock send fail count:%d  count_tx_ok:%d count_tx_fail:%d...", count, count_tx_ok, count_tx_fail);
+			printf("push_msg_fifo_without_lock send fail count:%d  count_tx_ok:%d count_tx_fail:%d ", count, count_tx_ok, count_tx_fail);
 		} else {
 			count_tx_ok++;
-			printf("push_msg_fifo_without_lock send ok count:%d  count_tx_ok:%d count_tx_fail:%d...", count, count_tx_ok, count_tx_fail);
+			printf("push_msg_fifo_without_lock send ok count:%d  count_tx_ok:%d count_tx_fail:%d ", count, count_tx_ok, count_tx_fail);
 		}
 		if (delay > 70) {
 			delay = 800;
 		}
 		delay = delay * 500;
-		printf("usleep:%d...\n\n\n", delay);
+		printf("usleep:%d ========= \n\n\n", delay);
 		usleep(delay);
 	}
 
@@ -204,17 +204,17 @@ void * test_fifo_thread_rx()
 		ret = get_msg_fifo_without_lock(pfifo, &msg);
 		if (ret != 0) {
 			count_rx_fail++;
-			printf("test_fifo_thread_rx  recv-fail count:%d count_rx_ok:%d count_rx_fail:%d check_pass_count:%d  check_err_count:%d  usleep:%d...\n\n\n", count, count_rx_ok, count_rx_fail, check_pass_count, check_err_count, delay);
+			printf("test_fifo_thread_rx  recv-fail count:%d count_rx_ok:%d count_rx_fail:%d check_pass_count:%d  check_err_count:%d  usleep:%d  ========\n\n\n", count, count_rx_ok, count_rx_fail, check_pass_count, check_err_count, delay);
 			usleep(delay);
 			continue;
 		}
 		count_rx_ok++;
 		if ((msg.head.type != MAGIC_NUM) || (rx_msg_buffer[0] != BUFFER1) || (rx_msg_buffer[1] != BUFFER2)){
 			check_err_count++;
-			printf("test_fifo_thread_rx check-error count:%d count_rx_ok:%d count_rx_fail:%d check_pass_count:%d check_err_count:%d  type:0x%x data[0]:0x%x data[1]:0x%x usleep:%d \n\n\n ", count, count_rx_ok, count_rx_fail, check_pass_count, check_err_count, msg.head.type, rx_msg_buffer[0], rx_msg_buffer[1], delay);
+			printf("test_fifo_thread_rx check-error count:%d count_rx_ok:%d count_rx_fail:%d check_pass_count:%d check_err_count:%d  type:0x%x data[0]:0x%x data[1]:0x%x usleep:%d ========\n\n\n ", count, count_rx_ok, count_rx_fail, check_pass_count, check_err_count, msg.head.type, rx_msg_buffer[0], rx_msg_buffer[1], delay);
 		} else {
 			check_pass_count++;
-			printf("test_fifo_thread_rx check-pass  count:%d count_rx_ok:%d count_rx_fail:%d check_pass_count:%d check_err_count:%d  type:0x%x data[0]:0x%x data[1]:0x%x usleep:%d \n\n\n ", count, count_rx_ok, count_rx_fail, check_pass_count, check_err_count, msg.head.type, rx_msg_buffer[0], rx_msg_buffer[1], delay);
+			printf("test_fifo_thread_rx check-pass  count:%d count_rx_ok:%d count_rx_fail:%d check_pass_count:%d check_err_count:%d  type:0x%x data[0]:0x%x data[1]:0x%x usleep:%d ========\n\n\n ", count, count_rx_ok, count_rx_fail, check_pass_count, check_err_count, msg.head.type, rx_msg_buffer[0], rx_msg_buffer[1], delay);
 		}
 		usleep(delay);
 	}

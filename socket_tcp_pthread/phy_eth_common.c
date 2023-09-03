@@ -227,11 +227,13 @@ int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pms
 
 	if (pfifo == NULL || pmsg == NULL) {
 		printf("push_msg_fifo pointer null\n");
+		printf("push_cnt:%d push_case_cnt[0]:%d push_case_cnt[1]:%d push_case_cnt[2]:%d push_case_cnt[3]:%d push_case_cnt[4]:%d push_case_cnt[5]:%d push_case_cnt[6]:%d \n", push_cnt, push_case_cnt[0], push_case_cnt[1], push_case_cnt[2], push_case_cnt[3], push_case_cnt[4], push_case_cnt[5], push_case_cnt[6]);
 		return -1;
 	}
 
 	if (pmsg->payload == NULL) {
 		printf("push_msg_fifo payload null\n");
+		printf("push_cnt:%d push_case_cnt[0]:%d push_case_cnt[1]:%d push_case_cnt[2]:%d push_case_cnt[3]:%d push_case_cnt[4]:%d push_case_cnt[5]:%d push_case_cnt[6]:%d \n", push_cnt, push_case_cnt[0], push_case_cnt[1], push_case_cnt[2], push_case_cnt[3], push_case_cnt[4], push_case_cnt[5], push_case_cnt[6]);
 		return -1;
 	}
 
@@ -242,6 +244,7 @@ int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pms
 	if (free_space < msg_total_len) {
 		fifo_full_cnt++;
 		printf("space is not enough ......wr:%d rd:%d  msg_total_len:0x%x free_space:0x%x size:0x%x fifo_full_cnt:%d \n", pfifo->wr, pfifo->rd, msg_total_len, free_space, pfifo->size, fifo_full_cnt);
+		printf("push_cnt:%d push_case_cnt[0]:%d push_case_cnt[1]:%d push_case_cnt[2]:%d push_case_cnt[3]:%d push_case_cnt[4]:%d push_case_cnt[5]:%d push_case_cnt[6]:%d \n", push_cnt, push_case_cnt[0], push_case_cnt[1], push_case_cnt[2], push_case_cnt[3], push_case_cnt[4], push_case_cnt[5], push_case_cnt[6]);
 		return -1;
 	} else {
 		printf("space is     enough ......wr:%d rd:%d msg_total_len:0x%x free_space:0x%x size:0x%x fifo_full_cnt:%d \n", pfifo->wr, pfifo->rd, msg_total_len, free_space, pfifo->size, fifo_full_cnt);
@@ -293,9 +296,9 @@ int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pms
 		}
 	}
 	pfifo->wr += msg_total_len;
-	if (push_cnt % 100 == 0) {
-		printf("push_cnt:%d push_case_cnt[0]:%d push_case_cnt[1]:%d push_case_cnt[2]:%d push_case_cnt[3]:%d push_case_cnt[4]:%d push_case_cnt[5]:%d push_case_cnt[6]:%d \n\n\n", push_cnt, push_case_cnt[0], push_case_cnt[1], push_case_cnt[2], push_case_cnt[3], push_case_cnt[4], push_case_cnt[5], push_case_cnt[6]);
-	}
+	//if (push_cnt % 100 == 0) {
+		printf("push_cnt:%d push_case_cnt[0]:%d push_case_cnt[1]:%d push_case_cnt[2]:%d push_case_cnt[3]:%d push_case_cnt[4]:%d push_case_cnt[5]:%d push_case_cnt[6]:%d \n", push_cnt, push_case_cnt[0], push_case_cnt[1], push_case_cnt[2], push_case_cnt[3], push_case_cnt[4], push_case_cnt[5], push_case_cnt[6]);
+	//}
 	return 0;
 }
 
@@ -310,17 +313,20 @@ int get_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg
 	
 	if (pfifo == NULL || pmsg == NULL) {
 		printf("get_msg_fifo  pointer null \n");
+		printf("get_cnt:%d get_case_cnt[0]:%d get_case_cnt[1]:%d get_case_cnt[2]:%d get_case_cnt[3]:%d get_case_cnt[4]:%d get_case_cnt[5]:%d get_case_cnt[6]:%d \n", get_cnt, get_case_cnt[0], get_case_cnt[1], get_case_cnt[2], get_case_cnt[3], get_case_cnt[4], get_case_cnt[5], get_case_cnt[6]);
 		return -1;
 	}
 
 	if (pmsg->payload == NULL) {
 		printf("get_msg_fifo  payload null \n");
+		printf("get_cnt:%d get_case_cnt[0]:%d get_case_cnt[1]:%d get_case_cnt[2]:%d get_case_cnt[3]:%d get_case_cnt[4]:%d get_case_cnt[5]:%d get_case_cnt[6]:%d \n", get_cnt, get_case_cnt[0], get_case_cnt[1], get_case_cnt[2], get_case_cnt[3], get_case_cnt[4], get_case_cnt[5], get_case_cnt[6]);
 		return -1;
 	}
 
 	if (pfifo->wr == pfifo->rd) {
 		fifo_empty_cnt++;
 		printf("get_msg_fifo  fifo empty  ..... wr:%d rd:%d size:0x%x fifo_empty_cnt:%d \n", pfifo->wr, pfifo->rd, pfifo->size, fifo_empty_cnt);
+		printf("get_cnt:%d get_case_cnt[0]:%d get_case_cnt[1]:%d get_case_cnt[2]:%d get_case_cnt[3]:%d get_case_cnt[4]:%d get_case_cnt[5]:%d get_case_cnt[6]:%d \n", get_cnt, get_case_cnt[0], get_case_cnt[1], get_case_cnt[2], get_case_cnt[3], get_case_cnt[4], get_case_cnt[5], get_case_cnt[6]);
 		return -1;
 	} else {
 		printf("get_msg_fifo  fifo normal ..... wr:%d rd:%d size:0x%x fifo_empty_cnt:%d \n", pfifo->wr, pfifo->rd, pfifo->size, fifo_empty_cnt);
@@ -374,9 +380,9 @@ int get_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg
 
 	pfifo->rd += sizeof(pmsg->head) + pmsg->head.len;
 
-	if (get_cnt % 100 == 0) {
-		printf("get_cnt:%d get_case_cnt[0]:%d get_case_cnt[1]:%d get_case_cnt[2]:%d get_case_cnt[3]:%d get_case_cnt[4]:%d get_case_cnt[5]:%d get_case_cnt[6]:%d \n\n\n", get_cnt, get_case_cnt[0], get_case_cnt[1], get_case_cnt[2], get_case_cnt[3], get_case_cnt[4], get_case_cnt[5], get_case_cnt[6]);
-	}
+	//if (get_cnt % 100 == 0) {
+		printf("get_cnt:%d get_case_cnt[0]:%d get_case_cnt[1]:%d get_case_cnt[2]:%d get_case_cnt[3]:%d get_case_cnt[4]:%d get_case_cnt[5]:%d get_case_cnt[6]:%d \n", get_cnt, get_case_cnt[0], get_case_cnt[1], get_case_cnt[2], get_case_cnt[3], get_case_cnt[4], get_case_cnt[5], get_case_cnt[6]);
+	//}
 
 	return 0;
 }
