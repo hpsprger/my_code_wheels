@@ -217,7 +217,7 @@ unsigned int fifo_empty_cnt = 0;
 int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pmsg)
 {
 	unsigned int msg_total_len;
-	unsigned int free_space;
+	unsigned short free_space;
 	unsigned int cur_len;
 	unsigned int i;
 	unsigned int wr;
@@ -235,7 +235,7 @@ int push_msg_fifo_without_lock(link_msg_fifo_without_lock *pfifo,  link_msg *pms
 
 	msg_total_len = sizeof(pmsg->head) + pmsg->head.len;
 
-	free_space = pfifo->size - (pfifo->wr - pfifo->rd);
+	free_space = pfifo->size - (unsigned short)(pfifo->wr - pfifo->rd); //注意这里一定要强转一下，否则相减后结果就是一个很大的值，出现异常，正式代码中这里注意是unsigned int 类型，unsigned short 为测试方便，free_space 也要用对应的类型 unsigned short
 
 	if (free_space < msg_total_len) {
 		fifo_full_cnt++;
